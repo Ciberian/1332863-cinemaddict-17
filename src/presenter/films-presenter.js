@@ -2,7 +2,7 @@ import FilmsSectionView from '../view/films-section-view.js';
 import FilmsListView from '../view/films-list-view.js';
 import FilmsContainerView from '../view/films-container-view.js';
 import FilmCardView from '../view/film-card-view.js';
-import ShowMoreBtn from '../view/show-more-btn-view.js';
+import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
 import { render } from '../render.js';
@@ -25,7 +25,7 @@ export default class FilmsPresenter {
       render(new FilmCardView(), this.filmsContainerComponent.getElement());
     }
 
-    render(new ShowMoreBtn(), this.filmsListComponent.getElement());
+    render(new ShowMoreBtnView(), this.filmsListComponent.getElement());
     render(new TopRatedFilmsView(), this.filmsSectionComponent.getElement());
     render(new MostCommentedFilmsView(), this.filmsSectionComponent.getElement());
 
