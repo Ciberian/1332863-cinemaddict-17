@@ -3,6 +3,7 @@ import { humanizeTaskDueDate } from '../utils.js';
 
 const createFilmCardTemplate = (film) => {
   const {
+    comments,
     filmInfo: {
       title,
       totalRating,
@@ -25,7 +26,7 @@ const createFilmCardTemplate = (film) => {
     return `${durationInHour}h ${restMinutes}m`;
   };
 
-  const releaseDate = (date !== null) ? humanizeTaskDueDate(date) : '';
+  const releaseDate = (date !== null) ? humanizeTaskDueDate(date, 'YYYY') : '';
 
   const filmInWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
@@ -39,11 +40,11 @@ const createFilmCardTemplate = (film) => {
         <p class="film-card__info">
           <span class="film-card__year">${releaseDate}</span>
           <span class="film-card__duration">${getfilmDuration()}</span>
-          <span class="film-card__genre">${genre}</span>
+          <span class="film-card__genre">${genre.length > 1 ? genre.join(', '): genre}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${description}</p>
-        <span class="film-card__comments">12 comments</span>
+        <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">
         <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${filmInWatchlistClassName}" type="button">Add to watchlist</button>

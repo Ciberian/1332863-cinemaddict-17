@@ -5,6 +5,7 @@ import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
+import FilmInfoView from '../view/film-info-view.js';
 import { render } from '../render.js';
 
 const RATED_FILMS_DISPLAYED = 2;
@@ -25,6 +26,7 @@ export default class FilmsPresenter {
     this.filmsContainer = filmsContainer;
     this.filmsModel = filmsModel;
     this.films = [...this.filmsModel.getFilms()];
+    this.comments = [...this.filmsModel.getComments()];
 
     render(this.filmsSectionComponent, this.filmsContainer);
     render(this.filmsListComponent, this.filmsSectionComponent.getElement());
@@ -49,5 +51,25 @@ export default class FilmsPresenter {
     for (let i = 0; i < COMMENTED_FILMS_DISPLAYED; i++) {
       render(new FilmCardView(this.films[i]), this.filmsContainerCommentedListComponent.getElement());
     }
+
+    const filmPosters = document.querySelectorAll('.film-card__poster');
+    const footer = document.querySelector('.footer');
+
+    filmPosters.forEach((poster) => {
+      poster.addEventListener('click', () => {
+        render(new FilmInfoView(this.films[1], this.comments), footer, 'afterend');
+
+        const closeBtn = document.querySelector('.film-details__close-btn');
+        const filmDetails = document.querySelector('.film-details');
+
+        closeBtn.addEventListener('click', () => {
+          filmDetails.remove();
+        });
+      });
+    });
+
+
   };
 }
+
+
