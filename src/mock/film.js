@@ -1,78 +1,62 @@
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger, getRandomArrayElement } from '../utils.js';
 
-const commentIds = [];
+const posters = [
+  'images/posters/sagebrush-trail.jpg',
+  'images/posters/santa-claus-conquers-the-martians.jpg',
+  'images/posters/the-dance-of-life.jpg',
+  'images/posters/the-great-flamarion.jpg',
+  'images/posters/the-man-with-the-golden-arm.jpg',
+  'images/posters/made-for-each-other.png',
+  'images/posters/popeye-meets-sinbad.png'
+];
 
-const getUniqueCommentId = (commentsAmount) => {
-  if(!commentIds.length) {
-    for (let i = 1; i <= commentsAmount; i++) {
-      commentIds.push(i);
-    }
-  }
+const comments = [
+  'A film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
+  'A film that changed my life, a true masterpiece.',
+  'Нуу, такое... На раз глянуть сойдёт',
+  'Что за чушню они сняли, кто на это вообще выделяет деньги.',
+  'Безумноумопмрачительнонереальнокрутотенечковый фильм.',
+  'Фильм не для массового зрителя, ничтоже сумняшемся его не понять...'
+];
 
-  const id = String(commentIds.splice(0, 1));
+const authors = ['Vasya Pupkin', 'Pupka Vasin', 'Shwarz', 'Rembo Ibragimivch', 'Thanos', 'Big_Frontender_Boss'];
 
-  return id;
-};
+const emotions = ['smile', 'sleeping', 'puke', 'angry'];
 
-const getRandomEmotion = () => {
-  const commentEmotions = ['smile', 'sleeping', 'puke', 'angry'];
+const genres = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
 
-  const randomIndex = getRandomInteger(0, commentEmotions.length - 1);
+const getRandomGenre = (arr) => arr.splice(getRandomInteger(0, 2), getRandomInteger(1, 3));
 
-  return commentEmotions[randomIndex];
-};
-
-const getRandomGenre = () => {
-  const genres = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
-
-  return genres.splice(getRandomInteger(0, 2), getRandomInteger(1, 3));
-};
-
-const getRandomPoster = () => {
-  const posters = [
-    'images/posters/sagebrush-trail.jpg',
-    'images/posters/santa-claus-conquers-the-martians.jpg',
-    'images/posters/the-dance-of-life.jpg',
-    'images/posters/the-great-flamarion.jpg',
-    'images/posters/the-man-with-the-golden-arm.jpg',
-    'images/posters/made-for-each-other.png',
-    'images/posters/popeye-meets-sinbad.png'
-  ];
-
-  const randomIndex = getRandomInteger(0, posters.length - 1);
-
-  return posters[randomIndex];
-};
-
-const generateCommentIdArray = () => {
+const generateCommentIdsArray = (commentsAmount) => {
   const randomComments = [];
 
-  while (randomComments.length < getRandomInteger(0, 10)) {
-    randomComments.push(getRandomInteger(1, 10));
+  while (randomComments.length < getRandomInteger(0, commentsAmount)) {
+    randomComments.push(getRandomInteger(1, commentsAmount));
   }
 
   const uniqueComments = new Set(randomComments);
-  const comments = [...uniqueComments];
 
-  return comments;
+  return [...uniqueComments];
 };
 
-const generateComment = (commentsAmount) => ({
-  id: getUniqueCommentId(commentsAmount),
-  author: 'Vasya Pupkin',
-  comment: 'A film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
-  date: '2022-02-11T16:12:32.554Z',
-  emotion: getRandomEmotion()
+let commentId = 0;
+const generateComment = () => ({
+  id: commentId++,
+  author: getRandomArrayElement(authors),
+  comment: getRandomArrayElement(comments),
+  date: `2022-02-${getRandomInteger(0, 2)}${getRandomInteger(0, 9)}T16:12:32.554Z`,
+  emotion: getRandomArrayElement(emotions)
 });
 
-const generateFilm = () => ({
-  id: 1,
-  comments: generateCommentIdArray(),
+let filmId = 0;
+const generateFilm = (commentsAmount) => ({
+  id: filmId++,
+  comments: generateCommentIdsArray(commentsAmount),
   filmInfo: {
     title: 'Sagebrush Trail',
     alternativeTitle: 'Laziness Who Sold Themselves',
     totalRating: `${getRandomInteger(4, 9)}.${getRandomInteger(0, 9)}`,
-    poster: getRandomPoster(),
+    poster: getRandomArrayElement(posters),
     ageRating: 18,
     director: 'Tom Ford',
     writers: [
@@ -87,7 +71,7 @@ const generateFilm = () => ({
       releaseCountry: 'Finland'
     },
     runtime: getRandomInteger(30, 150),
-    genre: getRandomGenre(),
+    genre: getRandomGenre(genres),
     description: 'Oscar-winning film, a war drama about two young people, from the creators of timeless classic "Nu, Pogodi!" and "Alice in Wonderland", with the best fight scenes since Bruce Lee.'
   },
   userDetails: {

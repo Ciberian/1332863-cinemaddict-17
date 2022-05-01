@@ -67,8 +67,6 @@ export default class FilmsPresenter {
         });
       });
     });
-
-
   };
 }
 
