@@ -1,6 +1,6 @@
 import { getRandomInteger, getRandomArrayElement } from '../utils.js';
 
-const posters = [
+const DEFAULT_POSTERS = [
   'images/posters/sagebrush-trail.jpg',
   'images/posters/santa-claus-conquers-the-martians.jpg',
   'images/posters/the-dance-of-life.jpg',
@@ -10,7 +10,7 @@ const posters = [
   'images/posters/popeye-meets-sinbad.png'
 ];
 
-const comments = [
+const DEFAULT_COMMENTS = [
   'A film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
   'A film that changed my life, a true masterpiece.',
   'Нуу, такое... На раз глянуть сойдёт',
@@ -19,44 +19,44 @@ const comments = [
   'Фильм не для массового зрителя, ничтоже сумняшемся его не понять...'
 ];
 
-const authors = ['Vasya Pupkin', 'Pupka Vasin', 'Shwarz', 'Rembo Ibragimivch', 'Thanos', 'Big_Frontender_Boss'];
+const DEFAULT_AUTHORS = ['Vasya Pupkin', 'Pupka Vasin', 'Shwarz', 'Rembo Ibragimivch', 'Thanos', 'Big_Frontender_Boss'];
 
-const emotions = ['smile', 'sleeping', 'puke', 'angry'];
+const DEFAULT_GENRES = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
 
-const genres = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
 const getRandomGenre = (arr) => arr.splice(getRandomInteger(0, 2), getRandomInteger(1, 3));
 
-const generateCommentIdsArray = (commentsAmount) => {
+const generateCommentIds = (commentsAmount) => {
   const randomComments = [];
 
   while (randomComments.length < getRandomInteger(0, commentsAmount)) {
     randomComments.push(getRandomInteger(1, commentsAmount));
   }
 
-  const uniqueComments = new Set(randomComments);
+  const uniqComments = new Set(randomComments);
 
-  return [...uniqueComments];
+  return [...uniqComments];
 };
 
 let commentId = 0;
 const generateComment = () => ({
   id: commentId++,
-  author: getRandomArrayElement(authors),
-  comment: getRandomArrayElement(comments),
+  author: getRandomArrayElement(DEFAULT_AUTHORS),
+  comment: getRandomArrayElement(DEFAULT_COMMENTS),
   date: `2022-02-${getRandomInteger(0, 2)}${getRandomInteger(0, 9)}T16:12:32.554Z`,
-  emotion: getRandomArrayElement(emotions)
+  emotion: getRandomArrayElement(EMOTIONS)
 });
 
 let filmId = 0;
 const generateFilm = (commentsAmount) => ({
   id: filmId++,
-  comments: generateCommentIdsArray(commentsAmount),
+  comments: generateCommentIds(commentsAmount),
   filmInfo: {
     title: 'Sagebrush Trail',
     alternativeTitle: 'Laziness Who Sold Themselves',
     totalRating: `${getRandomInteger(4, 9)}.${getRandomInteger(0, 9)}`,
-    poster: getRandomArrayElement(posters),
+    poster: getRandomArrayElement(DEFAULT_POSTERS),
     ageRating: 18,
     director: 'Tom Ford',
     writers: [
@@ -71,7 +71,7 @@ const generateFilm = (commentsAmount) => ({
       releaseCountry: 'Finland'
     },
     runtime: getRandomInteger(30, 150),
-    genre: getRandomGenre(genres),
+    genre: getRandomGenre(DEFAULT_GENRES),
     description: 'Oscar-winning film, a war drama about two young people, from the creators of timeless classic "Nu, Pogodi!" and "Alice in Wonderland", with the best fight scenes since Bruce Lee.'
   },
   userDetails: {

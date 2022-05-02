@@ -41,7 +41,7 @@ const createFilmInfoTemplate = (film, allComments) => {
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`))
+      </li>`)).join('')
   );
 
   const getfilmDuration = () => {
