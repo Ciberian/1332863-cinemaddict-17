@@ -41,7 +41,7 @@ const generateCommentIds = (commentsAmount) => {
 
 let commentId = 0;
 const generateComment = () => ({
-  id: commentId++,
+  id: ++commentId,
   author: getRandomArrayElement(DEFAULT_AUTHORS),
   comment: getRandomArrayElement(DEFAULT_COMMENTS),
   date: `2022-02-${getRandomInteger(0, 2)}${getRandomInteger(0, 9)}T16:12:32.554Z`,
@@ -50,7 +50,7 @@ const generateComment = () => ({
 
 let filmId = 0;
 const generateFilm = (commentsAmount) => ({
-  id: filmId++,
+  id: ++filmId,
   comments: generateCommentIds(commentsAmount),
   filmInfo: {
     title: 'Sagebrush Trail',

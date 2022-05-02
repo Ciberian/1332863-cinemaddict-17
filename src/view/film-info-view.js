@@ -1,10 +1,9 @@
 import { createElement } from '../render.js';
 import { humanizeTaskDueDate } from '../utils.js';
 
-const createFilmInfoTemplate = (film, allComments) => {
+const createFilmInfoTemplate = (film, commentsData) => {
 
   const {
-    comments,
     filmInfo: {
       title,
       alternativeTitle,
@@ -25,10 +24,8 @@ const createFilmInfoTemplate = (film, allComments) => {
     }
   } = film;
 
-  const selectedComments = allComments.filter(({id}) => comments.some((commentId) => commentId === Number(id)));
-
   const createComments = () => (
-    selectedComments.map(({ author, comment, date: commentDate, emotion }) => (
+    commentsData.map(({ author, comment, date: commentDate, emotion }) => (
       `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
@@ -132,7 +129,7 @@ const createFilmInfoTemplate = (film, allComments) => {
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${selectedComments.length}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsData.length}</span></h3>
 
             <ul class="film-details__comments-list">${createComments()}</ul>
 

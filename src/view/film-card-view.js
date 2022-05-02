@@ -3,6 +3,7 @@ import { humanizeTaskDueDate } from '../utils.js';
 
 const createFilmCardTemplate = (film) => {
   const {
+    id,
     comments,
     filmInfo: {
       title,
@@ -33,7 +34,7 @@ const createFilmCardTemplate = (film) => {
   const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
 
   return (
-    `<article class="film-card">
+    `<article class="film-card" data-id="${id}">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${totalRating}</p>
