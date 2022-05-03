@@ -30,7 +30,7 @@ const getRandomGenre = (arr) => arr.splice(getRandomInteger(0, 2), getRandomInte
 const generateCommentIds = (commentsAmount) => {
   const randomComments = [];
 
-  while (randomComments.length < getRandomInteger(0, commentsAmount)) {
+  while (randomComments.length < getRandomInteger(4, commentsAmount)) {
     randomComments.push(getRandomInteger(1, commentsAmount));
   }
 

@@ -11,44 +11,47 @@ const RATED_FILMS_DISPLAYED = 2;
 const COMMENTED_FILMS_DISPLAYED = 2;
 
 export default class FilmsListPresenter {
-  filmsSectionComponent = new FilmsSectionView();
-  filmsListComponent = new FilmsListView();
-  filmsListContainerComponent = new FilmsContainerView();
+  #filmsSectionComponent = new FilmsSectionView();
+  #filmsListComponent = new FilmsListView();
+  #filmsListContainerComponent = new FilmsContainerView();
 
-  topRatedFilmsComponent = new TopRatedFilmsView();
-  topRatedContainerComponent = new FilmsContainerView();
+  #topRatedFilmsComponent = new TopRatedFilmsView();
+  #topRatedContainerComponent = new FilmsContainerView();
 
-  mostCommentedFilmsComponent = new MostCommentedFilmsView();
-  mostCommentedContainerComponent = new FilmsContainerView();
+  #mostCommentedFilmsComponent = new MostCommentedFilmsView();
+  #mostCommentedContainerComponent = new FilmsContainerView();
+
+  #filmsContainer = null;
+  #filmsModel = null;
+  #films = [];
 
   init = (filmsContainer, filmsModel) => {
-    this.filmsContainer = filmsContainer;
-    this.filmsModel = filmsModel;
-    this.films = [...this.filmsModel.getFilms()];
-    this.comments = [...this.filmsModel.getComments()];
+    this.#filmsContainer = filmsContainer;
+    this.#filmsModel = filmsModel;
+    this.#films = [...this.#filmsModel.films];
 
-    render(this.filmsSectionComponent, this.filmsContainer);
-    render(this.filmsListComponent, this.filmsSectionComponent.getElement());
-    render(this.filmsListContainerComponent, this.filmsListComponent.getElement());
+    render(this.#filmsSectionComponent, this.#filmsContainer);
+    render(this.#filmsListComponent, this.#filmsSectionComponent.element);
+    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
-    for (let i = 0; i < this.films.length; i++) {
-      render(new FilmCardView(this.films[i]), this.filmsListContainerComponent.getElement());
+    for (let i = 0; i < this.#films.length; i++) {
+      render(new FilmCardView(this.#films[i]), this.#filmsListContainerComponent.element);
     }
 
-    render(new ShowMoreBtnView(), this.filmsListComponent.getElement());
+    render(new ShowMoreBtnView(), this.#filmsListComponent.element);
 
-    render(this.topRatedFilmsComponent, this.filmsSectionComponent.getElement());
-    render(this.topRatedContainerComponent, this.topRatedFilmsComponent.getElement());
+    render(this.#topRatedFilmsComponent, this.#filmsSectionComponent.element);
+    render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
 
     for (let i = 0; i < RATED_FILMS_DISPLAYED; i++) {
-      render(new FilmCardView(this.films[i]), this.topRatedContainerComponent.getElement());
+      render(new FilmCardView(this.#films[i]), this.#topRatedContainerComponent.element);
     }
 
-    render(this.mostCommentedFilmsComponent, this.filmsSectionComponent.getElement());
-    render(this.mostCommentedContainerComponent, this.mostCommentedFilmsComponent.getElement());
+    render(this.#mostCommentedFilmsComponent, this.#filmsSectionComponent.element);
+    render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
 
     for (let i = 0; i < COMMENTED_FILMS_DISPLAYED; i++) {
-      render(new FilmCardView(this.films[i]), this.mostCommentedContainerComponent.getElement());
+      render(new FilmCardView(this.#films[i]), this.#mostCommentedContainerComponent.element);
     }
   };
 }

@@ -12,20 +12,20 @@ const siteMainElement = document.querySelector('.main');
 const siteFooterStatisticsElement = document.querySelector('.footer__statistics');
 const filmsModel = new FilmsModel();
 const filmsListPresenter = new FilmsListPresenter();
+const filmCardPresenter = new FilmCardPresenter();
 
 render(new UserNameView(), siteHeaderElement);
 render(new FilterView(), siteMainElement);
 render(new SortView(), siteMainElement);
 
-const promise = new Promise((resolve) => {
+const renderFilmList = new Promise((resolve) => {
   resolve(filmsListPresenter.init(siteMainElement, filmsModel));
 });
 
-promise.then(() => {
-  const filmCards = document.querySelectorAll('.film-card');
-  const filmCardPresenter = new FilmCardPresenter(filmCards, filmsModel);
+renderFilmList.then(() => {
+  const filmCards = document.querySelectorAll('.film-card__link');
 
-  filmCardPresenter.showPopup();
+  filmCardPresenter.showPopup(filmCards, filmsModel);
 });
 
 render(new FilmCountView(), siteFooterStatisticsElement);

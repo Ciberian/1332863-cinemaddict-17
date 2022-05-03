@@ -34,8 +34,8 @@ const createFilmCardTemplate = (film) => {
   const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
 
   return (
-    `<article class="film-card" data-id="${id}">
-      <a class="film-card__link">
+    `<article class="film-card">
+      <a class="film-card__link" data-id="${id}">
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
@@ -56,23 +56,26 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCardView {
+  #element = null;
+  #film = null;
+
   constructor(film) {
-    this.film = film;
+    this.#film = film;
   }
 
-  getTemplate() {
-    return createFilmCardTemplate(this.film);
+  get template() {
+    return createFilmCardTemplate(this.#film);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
