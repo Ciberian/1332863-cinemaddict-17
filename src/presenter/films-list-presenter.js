@@ -11,21 +11,6 @@ import { render } from '../render.js';
 const RATED_FILMS_DISPLAYED = 2;
 const COMMENTED_FILMS_DISPLAYED = 2;
 
-const removePopupByEsc = (evt) => {
-  if (evt.code === 'Escape') {
-    evt.preventDefault();
-    document.body.classList.remove('hide-overflow');
-    document.querySelector('.film-details').remove();
-  }
-};
-
-const removePopupByClick = () => {
-  document.body.classList.remove('hide-overflow');
-  document.querySelector('.film-details').remove();
-
-  document.removeEventListener('keydown', removePopupByEsc, {once: true});
-};
-
 const addFilmPopup = (film, commentsList) => {
   if(!document.querySelector('.film-details')) {
     const siteFooterElement = document.querySelector('.footer');
@@ -35,10 +20,27 @@ const addFilmPopup = (film, commentsList) => {
     render(filmPopupComponent, siteFooterElement, 'afterend');
     document.body.classList.add('hide-overflow');
 
-    document.addEventListener('keydown', removePopupByEsc, {once: true});
-    filmPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', removePopupByClick);
+    document.addEventListener('keydown', onEscKeyDown);
+    filmPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', onCloseBtnClick);
   }
 };
+
+const removeFilmPopup = () => {
+  document.body.classList.remove('hide-overflow');
+  document.querySelector('.film-details').remove();
+  document.removeEventListener('keydown', onEscKeyDown);
+};
+
+function onCloseBtnClick() {
+  removeFilmPopup();
+}
+
+function onEscKeyDown(evt) {
+  if (evt.code === 'Escape') {
+    evt.preventDefault();
+    removeFilmPopup();
+  }
+}
 
 export default class FilmsListPresenter {
   #filmsSectionComponent = new FilmsSectionView();

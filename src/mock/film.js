@@ -25,7 +25,7 @@ const DEFAULT_GENRES = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
 
 const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
-const getRandomGenre = (arr) => arr.splice(getRandomInteger(0, 2), getRandomInteger(1, 3));
+const getRandomGenre = (arr) => arr.slice(getRandomInteger(0, 2), getRandomInteger(2, 3));
 
 const generateCommentIds = (commentsAmount) => {
   const randomComments = [];

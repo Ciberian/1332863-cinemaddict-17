@@ -25,8 +25,8 @@ const createFilmPopupTemplate = (film, commentsData) => {
   } = film;
 
   const createComments = () => (
-    commentsData.map(({ author, comment, date: commentDate, emotion }) => (
-      `<li class="film-details__comment">
+    commentsData.reduce((htmlTemplate, { author, comment, date: commentDate, emotion }) => (
+      htmlTemplate += `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
         </span>
@@ -38,7 +38,7 @@ const createFilmPopupTemplate = (film, commentsData) => {
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`)).join('')
+      </li>`), '')
   );
 
   const getfilmDuration = () => {
@@ -48,11 +48,7 @@ const createFilmPopupTemplate = (film, commentsData) => {
     return `${durationInHour}h ${restMinutes}m`;
   };
 
-  const getGenreTemplates = () => {
-    const genreTemplates = genre.map((gen) => `<span class="film-details__genre">${gen}</span>`);
-
-    return genreTemplates.join(' ');
-  };
+  const getGenreTemplates = () => genre.reduce((htmlTemplate, gen) => (htmlTemplate += `<span class="film-details__genre">${gen}</span>`), '');
 
   const releaseDate = (date !== null) ? humanizeTaskDueDate(date, 'DD MMMM YYYY') : '';
 
