@@ -1,7 +1,7 @@
 import { createElement } from '../render.js';
 import { humanizeTaskDueDate } from '../utils.js';
 
-const createFilmInfoTemplate = (film, commentsData) => {
+const createFilmPopupTemplate = (film, commentsData) => {
 
   const {
     filmInfo: {
@@ -168,19 +168,19 @@ const createFilmInfoTemplate = (film, commentsData) => {
   </section>`);
 };
 
-export default class FilmInfoView {
+export default class FilmPopupView {
   #element = null;
   #film = null;
   #comments = null;
 
   constructor(film, comments) {
-    this.film = film;
-    this.comments = comments;
+    this.#film = film;
+    this.#comments = comments;
   }
 
 
   get template() {
-    return createFilmInfoTemplate(this.film, this.comments);
+    return createFilmPopupTemplate(this.#film, this.#comments);
   }
 
   get element() {
