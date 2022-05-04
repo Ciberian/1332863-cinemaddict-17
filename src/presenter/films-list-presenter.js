@@ -20,7 +20,7 @@ const addFilmPopup = (film, commentsList) => {
     render(filmPopupComponent, siteFooterElement, 'afterend');
     document.body.classList.add('hide-overflow');
 
-    document.addEventListener('keydown', onEscKeyDown);
+    document.addEventListener('keydown', onDocumentKeyDown);
     filmPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', onCloseBtnClick);
   }
 };
@@ -28,14 +28,14 @@ const addFilmPopup = (film, commentsList) => {
 const removeFilmPopup = () => {
   document.body.classList.remove('hide-overflow');
   document.querySelector('.film-details').remove();
-  document.removeEventListener('keydown', onEscKeyDown);
+  document.removeEventListener('keydown', onDocumentKeyDown);
 };
 
 function onCloseBtnClick() {
   removeFilmPopup();
 }
 
-function onEscKeyDown(evt) {
+function onDocumentKeyDown(evt) {
   if (evt.code === 'Escape') {
     evt.preventDefault();
     removeFilmPopup();
