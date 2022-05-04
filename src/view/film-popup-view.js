@@ -1,10 +1,9 @@
 import { createElement } from '../render.js';
 import { humanizeTaskDueDate } from '../utils.js';
 
-const createFilmInfoTemplate = (film, allComments) => {
+const createFilmPopupTemplate = (film, commentsData) => {
 
   const {
-    comments,
     filmInfo: {
       title,
       alternativeTitle,
@@ -25,11 +24,9 @@ const createFilmInfoTemplate = (film, allComments) => {
     }
   } = film;
 
-  const selectedComments = allComments.filter(({id}) => comments.some((commentId) => commentId === Number(id)));
-
   const createComments = () => (
-    selectedComments.map(({ author, comment, date: commentDate, emotion }) => (
-      `<li class="film-details__comment">
+    commentsData.reduce((htmlTemplate, { author, comment, date: commentDate, emotion }) => (
+      htmlTemplate += `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
         </span>
@@ -41,7 +38,7 @@ const createFilmInfoTemplate = (film, allComments) => {
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`))
+      </li>`), '')
   );
 
   const getfilmDuration = () => {
@@ -51,11 +48,7 @@ const createFilmInfoTemplate = (film, allComments) => {
     return `${durationInHour}h ${restMinutes}m`;
   };
 
-  const getGenreTemplates = () => {
-    const genreTemplates = genre.map((gen) => `<span class="film-details__genre">${gen}</span>`);
-
-    return genreTemplates.join(' ');
-  };
+  const getGenreTemplates = () => genre.reduce((htmlTemplate, gen) => (htmlTemplate += `<span class="film-details__genre">${gen}</span>`), '');
 
   const releaseDate = (date !== null) ? humanizeTaskDueDate(date, 'DD MMMM YYYY') : '';
 
@@ -132,7 +125,7 @@ const createFilmInfoTemplate = (film, allComments) => {
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${selectedComments.length}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsData.length}</span></h3>
 
             <ul class="film-details__comments-list">${createComments()}</ul>
 
@@ -171,26 +164,31 @@ const createFilmInfoTemplate = (film, allComments) => {
   </section>`);
 };
 
-export default class FilmInfoView {
+export default class FilmPopupView {
+  #element = null;
+  #film = null;
+  #comments = null;
+
   constructor(film, comments) {
-    this.film = film;
-    this.comments = comments;
+    this.#film = film;
+    this.#comments = comments;
   }
 
-  getTemplate() {
-    return createFilmInfoTemplate(this.film, this.comments);
+
+  get template() {
+    return createFilmPopupTemplate(this.#film, this.#comments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
 
