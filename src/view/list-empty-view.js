@@ -18,6 +18,7 @@ export default class ListEmptyView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }

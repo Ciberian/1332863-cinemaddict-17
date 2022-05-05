@@ -22,6 +22,7 @@ export default class MostCommentedFilmsView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }

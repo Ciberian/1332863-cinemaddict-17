@@ -19,6 +19,7 @@ export default class FilmsContainerView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }

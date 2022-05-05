@@ -83,7 +83,6 @@ export default class FilmsListPresenter {
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
 
     if (this.#renderedFilmCount >= this.#films.length) {
-      this.#showMoreBtnComponent.element.remove();
       this.#showMoreBtnComponent.removeElement();
     }
   };
@@ -99,7 +98,7 @@ export default class FilmsListPresenter {
   #renderFilmList = () => {
     render(this.#filmsSectionComponent, this.#filmsContainer);
 
-    if (this.#films.length === 0 || this.#films.length === undefined) {
+    if (!this.#films.length) {
       render(new ListEmptyView(), this.#filmsSectionComponent.element);
       return;
     }

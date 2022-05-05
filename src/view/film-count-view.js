@@ -23,6 +23,7 @@ export default class FilmCountView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }
