@@ -18,6 +18,7 @@ export default class FilmsSectionView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }

@@ -22,6 +22,7 @@ export default class TopRatedFilmsView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }

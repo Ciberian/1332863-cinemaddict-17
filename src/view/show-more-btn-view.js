@@ -18,6 +18,7 @@ export default class ShowMoreBtnView {
   }
 
   removeElement() {
+    this.#element.remove();
     this.#element = null;
   }
 }
