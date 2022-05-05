@@ -71,20 +71,6 @@ export default class FilmsListPresenter {
     this.#comments = [...this.#filmsModel.comments];
 
     this.#renderFilmList();
-
-    render(this.#topRatedFilmsComponent, this.#filmsSectionComponent.element);
-    render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
-
-    for (let i = 0; i < RATED_FILMS_DISPLAYED; i++) {
-      this.#renderFilm(this.#films[i], this.#topRatedContainerComponent.element);
-    }
-
-    render(this.#mostCommentedFilmsComponent, this.#filmsSectionComponent.element);
-    render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
-
-    for (let i = 0; i < COMMENTED_FILMS_DISPLAYED; i++) {
-      this.#renderFilm(this.#films[i], this.#mostCommentedContainerComponent.element);
-    }
   };
 
   #handleShowMoreButtonClick = () => {
@@ -113,7 +99,7 @@ export default class FilmsListPresenter {
     render(this.#filmsListComponent, this.#filmsSectionComponent.element);
     render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
-    if (this.#films.length < FILM_COUNT_PER_STEP) {
+    if (this.#films.length === 0 || this.#films.length === undefined) {
       render(new ListEmptyView(), this.#filmsListComponent.element);
       return;
     }
@@ -127,5 +113,30 @@ export default class FilmsListPresenter {
 
       this.#showMoreBtnComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
     }
+
+    this.#renderTopRatedList();
+    this.#renderMostCommentedList();
+  };
+
+  #renderTopRatedList = () => {
+    render(this.#topRatedFilmsComponent, this.#filmsSectionComponent.element);
+    render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
+
+    this.#films
+      .slice()
+      .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
+      .slice(0, RATED_FILMS_DISPLAYED)
+      .forEach((topRatedFilm) =>this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
+  };
+
+  #renderMostCommentedList = () => {
+    render(this.#mostCommentedFilmsComponent, this.#filmsSectionComponent.element);
+    render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
+
+    this.#films
+      .slice()
+      .sort((a, b) => b.comments.length - a.comments.length)
+      .slice(0, COMMENTED_FILMS_DISPLAYED)
+      .forEach((mostCommentedFilm) =>this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
   };
 }
