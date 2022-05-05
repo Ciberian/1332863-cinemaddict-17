@@ -58,7 +58,6 @@ export default class FilmsListPresenter {
   #showMoreBtnComponent = new ShowMoreBtnView();
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
-
   #filmsContainer = null;
   #filmsModel = null;
   #films = [];
@@ -96,13 +95,14 @@ export default class FilmsListPresenter {
 
   #renderFilmList = () => {
     render(this.#filmsSectionComponent, this.#filmsContainer);
-    render(this.#filmsListComponent, this.#filmsSectionComponent.element);
-    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
     if (this.#films.length === 0 || this.#films.length === undefined) {
-      render(new ListEmptyView(), this.#filmsListComponent.element);
+      render(new ListEmptyView(), this.#filmsSectionComponent.element);
       return;
     }
+
+    render(this.#filmsListComponent, this.#filmsSectionComponent.element);
+    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
     for (let i = 0; i < Math.min(this.#films.length, FILM_COUNT_PER_STEP); i++) {
       this.#renderFilm(this.#films[i], this.#filmsListContainerComponent.element);
@@ -126,7 +126,7 @@ export default class FilmsListPresenter {
       .slice()
       .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
       .slice(0, RATED_FILMS_DISPLAYED)
-      .forEach((topRatedFilm) =>this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
+      .forEach((topRatedFilm) => this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
   };
 
   #renderMostCommentedList = () => {
@@ -137,6 +137,6 @@ export default class FilmsListPresenter {
       .slice()
       .sort((a, b) => b.comments.length - a.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)
-      .forEach((mostCommentedFilm) =>this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
+      .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
   };
 }

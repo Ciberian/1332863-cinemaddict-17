@@ -14,8 +14,11 @@ const filmsListPresenter = new FilmsListPresenter();
 
 render(new UserNameView(), siteHeaderElement);
 render(new FilterView(), siteMainElement);
-render(new SortView(), siteMainElement);
+
+if(filmsModel.films.length) {
+  render(new SortView(), siteMainElement);
+}
 
 filmsListPresenter.init(siteMainElement, filmsModel);
 
-render(new FilmCountView(), siteFooterStatisticsElement);
+render(new FilmCountView(filmsModel.films.length), siteFooterStatisticsElement);
