@@ -14,24 +14,27 @@ const COMMENTED_FILMS_DISPLAYED = 2;
 const FILM_COUNT_PER_STEP = 5;
 
 const addFilmPopup = (film, commentsList) => {
-  if(!document.querySelector('.film-details')) {
-    const siteFooterElement = document.querySelector('.footer');
-    const selectedComments = commentsList.filter(({id}) => film.comments.some((commentId) => commentId === Number(id)));
-    const filmPopupComponent = new FilmPopupView(film, selectedComments);
-
-    render(filmPopupComponent, siteFooterElement, 'afterend');
-    document.body.classList.add('hide-overflow');
-
-    document.addEventListener('keydown', onDocumentKeyDown);
-    filmPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', onCloseBtnClick);
+  if(document.querySelector('.film-details')) {
+    removeFilmPopup();
   }
+
+  const siteFooterElement = document.querySelector('.footer');
+  const selectedComments = commentsList.filter(({id}) => film.comments.some((commentId) => commentId === Number(id)));
+  const filmPopupComponent = new FilmPopupView(film, selectedComments);
+
+  render(filmPopupComponent, siteFooterElement, 'afterend');
+  document.body.classList.add('hide-overflow');
+
+  document.addEventListener('keydown', onDocumentKeyDown);
+  filmPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', onCloseBtnClick);
+
 };
 
-const removeFilmPopup = () => {
+function removeFilmPopup() {
   document.body.classList.remove('hide-overflow');
   document.querySelector('.film-details').remove();
   document.removeEventListener('keydown', onDocumentKeyDown);
-};
+}
 
 function onCloseBtnClick() {
   removeFilmPopup();
