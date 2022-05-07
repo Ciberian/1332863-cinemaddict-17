@@ -4,7 +4,7 @@ import SortView from './view/sort-view.js';
 import FilmsListPresenter from './presenter/films-list-presenter.js';
 import FilmCountView from './view/film-count-view.js';
 import FilmsModel from './model/films-model.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');

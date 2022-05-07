@@ -7,7 +7,7 @@ import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 const RATED_FILMS_DISPLAYED = 2;
 const COMMENTED_FILMS_DISPLAYED = 2;
