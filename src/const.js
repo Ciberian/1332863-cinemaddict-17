@@ -24,7 +24,6 @@ const DEFAULT_GENRES = ['Drama', 'Comedy', 'Musical', 'Western', 'Cartoon'];
 const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
 const FilterType = {
-  ALL: 'all',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites',
