@@ -4,6 +4,7 @@ import SortView from './view/sort-view.js';
 import FilmsListPresenter from './presenter/films-list-presenter.js';
 import FilmCountView from './view/film-count-view.js';
 import FilmsModel from './model/films-model.js';
+import { generateFilter } from './mock/filter.js';
 import { render } from './framework/render.js';
 
 const siteHeaderElement = document.querySelector('.header');
@@ -13,7 +14,9 @@ const filmsModel = new FilmsModel();
 const filmsListPresenter = new FilmsListPresenter(siteMainElement, filmsModel);
 
 render(new UserNameView(), siteHeaderElement);
-render(new FilterView(), siteMainElement);
+
+const filters = generateFilter(filmsModel.films);
+render(new FilterView(filters), siteMainElement);
 
 if(filmsModel.films.length) {
   render(new SortView(), siteMainElement);
