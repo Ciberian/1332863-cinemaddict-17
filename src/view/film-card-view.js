@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate } from '../utils.js';
+import { humanizeFilmDate } from '../utils.js';
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -11,12 +11,9 @@ const createFilmCardTemplate = (film) => {
       poster,
       description,
       runtime,
-      release: { date }},
-    userDetails: {
-      watchlist,
-      alreadyWatched,
-      favorite
-    }
+      release: { date },
+    },
+    userDetails: { watchlist, alreadyWatched, favorite },
   } = film;
 
   const getfilmDuration = () => {
@@ -26,21 +23,20 @@ const createFilmCardTemplate = (film) => {
     return `${durationInHour}h ${restMinutes}m`;
   };
 
-  const releaseDate = (date !== null) ? humanizeTaskDueDate(date, 'YYYY') : '';
+  const releaseDate = date !== null ? humanizeFilmDate(date, 'YYYY') : '';
 
   const filmInWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
   const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
 
-  return (
-    `<article class="film-card">
+  return `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${releaseDate}</span>
           <span class="film-card__duration">${getfilmDuration()}</span>
-          <span class="film-card__genre">${genre.length > 1 ? genre.join(', '): genre}</span>
+          <span class="film-card__genre">${genre.length > 1 ? genre.join(', ') : genre}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${description}</p>
@@ -51,7 +47,7 @@ const createFilmCardTemplate = (film) => {
         <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${alreadyWatchedClassName}" type="button">Mark as watched</button>
         <button class="film-card__controls-item film-card__controls-item--favorite ${favoriteFilmClassName}" type="button">Mark as favorite</button>
       </div>
-    </article>`);
+    </article>`;
 };
 
 export default class FilmCardView extends AbstractView {
