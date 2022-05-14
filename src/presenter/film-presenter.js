@@ -39,14 +39,13 @@ export default class FilmPresenter {
     remove(this.#filmCardComponent);
   };
 
-
   #addFilmPopup = (film, commentsList) => {
-    if(this.#filmPopupComponent) {
-      this.#removeFilmPopup();
+    if (document.querySelector('.film-details')) {
+      document.querySelector('.film-details').remove();
     }
 
     const siteFooterElement = document.querySelector('.footer');
-    const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
+    const selectedComments = commentsList.filter(({id}) => film.comments.some((commentId) => commentId === Number(id)));
     this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
 
     render(this.#filmPopupComponent, siteFooterElement, 'afterend');
@@ -67,7 +66,7 @@ export default class FilmPresenter {
   };
 
   #onDocumentKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.code === 'Escape') {
       evt.preventDefault();
       this.#removeFilmPopup();
     }
