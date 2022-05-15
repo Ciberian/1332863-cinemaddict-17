@@ -7,6 +7,7 @@ import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
 import { render, remove } from '../framework/render.js';
+import { updateItem } from '../utils.js';
 
 const RATED_FILMS_DISPLAYED = 2;
 const COMMENTED_FILMS_DISPLAYED = 2;
@@ -35,11 +36,12 @@ export default class FilmsListPresenter {
   constructor(filmsContainer, filmsModel) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
-    this.#films = [...this.#filmsModel.films];
     this.#comments = [...this.#filmsModel.comments];
   }
 
   init = () => {
+    this.#films = [...this.#filmsModel.films];
+
     this.#renderFilmList();
 
     if (this.#films.length) {
@@ -48,8 +50,13 @@ export default class FilmsListPresenter {
     }
   };
 
+  #handleFilmChange = (updatedFilm, container) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm, container);
+  };
+
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#comments);
+    const filmPresenter = new FilmPresenter(this.#comments, this.#handleFilmChange);
 
     filmPresenter.init(film, container);
     this.#filmsPresenter.set(film.id, filmPresenter);

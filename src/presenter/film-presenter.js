@@ -6,12 +6,14 @@ import { render, remove, replace } from '../framework/render.js';
 export default class FilmPresenter {
   #film = null;
   #comments = null;
+  #changeData = null;
   #filmListContainer = null;
   #filmCardComponent = null;
   #filmPopupComponent = null;
 
-  constructor(comments) {
+  constructor(comments, changeData) {
     this.#comments = comments;
+    this.#changeData = changeData;
   }
 
   init = (film, container) => {
@@ -22,6 +24,9 @@ export default class FilmPresenter {
 
     this.#filmCardComponent = new FilmCardView(this.#film);
     this.#filmCardComponent.setClickHandler(() => this.#addFilmPopup(this.#film, this.#comments));
+    this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
     if (prevFilmComponent === null) {
       render(this.#filmCardComponent, this.#filmListContainer);
@@ -53,6 +58,9 @@ export default class FilmPresenter {
 
     document.addEventListener('keydown', this.#onDocumentKeyDown);
     this.#filmPopupComponent.setClickHandler(this.#onCloseBtnClick);
+    this.#filmPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#filmPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#filmPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
   };
 
   #removeFilmPopup = () => {
@@ -70,5 +78,29 @@ export default class FilmPresenter {
       evt.preventDefault();
       this.#removeFilmPopup();
     }
+  };
+
+  #handleFavoriteClick = () => {
+    this.#changeData({...this.#film, userDetails: {
+      favorite: !this.#film.userDetails.favorite,
+      alreadyWatched: this.#film.userDetails.alreadyWatched,
+      watchlist: this.#film.userDetails.watchlist
+    }}, this.#filmListContainer);
+  };
+
+  #handleWatchedClick = () => {
+    this.#changeData({...this.#film, userDetails: {
+      favorite: this.#film.userDetails.favorite,
+      alreadyWatched: !this.#film.userDetails.alreadyWatched,
+      watchlist: this.#film.userDetails.watchlist
+    }}, this.#filmListContainer);
+  };
+
+  #handleWatchlistClick = () => {
+    this.#changeData({...this.#film, userDetails: {
+      favorite: this.#film.userDetails.favorite,
+      alreadyWatched: this.#film.userDetails.alreadyWatched,
+      watchlist: !this.#film.userDetails.watchlist
+    }}, this.#filmListContainer);
   };
 }
