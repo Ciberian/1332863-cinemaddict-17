@@ -35,6 +35,10 @@ export default class FilmPresenter {
 
     if (this.#filmListContainer.contains(prevFilmComponent.element)) {
       replace(this.#filmCardComponent, prevFilmComponent);
+
+      if (document.querySelector('.film-details')) {
+        this.#addFilmPopup(this.#film, this.#comments);
+      }
     }
 
     remove(prevFilmComponent);
@@ -50,7 +54,7 @@ export default class FilmPresenter {
     }
 
     const siteFooterElement = document.querySelector('.footer');
-    const selectedComments = commentsList.filter(({id}) => film.comments.some((commentId) => commentId === Number(id)));
+    const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
     this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
 
     render(this.#filmPopupComponent, siteFooterElement, 'afterend');
