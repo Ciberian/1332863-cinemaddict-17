@@ -1,5 +1,6 @@
 import { getRandomInteger, getRandomArrayElement } from '../utils.js';
 import { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS } from '../const.js';
+import { nanoid } from 'nanoid';
 
 const getRandomGenre = (arr) => arr.slice(getRandomInteger(0, 2), getRandomInteger(2, 3));
 
@@ -24,9 +25,8 @@ const generateComment = () => ({
   emotion: getRandomArrayElement(EMOTIONS)
 });
 
-let filmId = 0;
 const generateFilm = (commentsAmount) => ({
-  id: ++filmId,
+  id: nanoid(),
   comments: generateCommentIds(commentsAmount),
   filmInfo: {
     title: 'Sagebrush Trail',

@@ -1,8 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate } from '../utils.js';
+import { humanizeFilmDate } from '../utils.js';
 
 const createFilmPopupTemplate = (film, commentsData) => {
-
   const {
     filmInfo: {
       title,
@@ -16,17 +15,15 @@ const createFilmPopupTemplate = (film, commentsData) => {
       poster,
       description,
       runtime,
-      release: { date, releaseCountry }},
-    userDetails: {
-      watchlist,
-      alreadyWatched,
-      favorite
-    }
+      release: { date, releaseCountry },
+    },
+    userDetails: { watchlist, alreadyWatched, favorite },
   } = film;
 
-  const createComments = () => (
-    commentsData.reduce((htmlTemplate, { author, comment, date: commentDate, emotion }) => (
-      htmlTemplate += `<li class="film-details__comment">
+  const createComments = () =>
+    commentsData.reduce(
+      (htmlTemplate, { author, comment, date: commentDate, emotion }) =>
+        (htmlTemplate += `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
         </span>
@@ -34,12 +31,13 @@ const createFilmPopupTemplate = (film, commentsData) => {
           <p class="film-details__comment-text">${comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${humanizeTaskDueDate(commentDate, 'YYYY/MMMM/DD HH:MM')}</span>
+            <span class="film-details__comment-day">${humanizeFilmDate(commentDate, 'YYYY/MMMM/DD HH:MM')}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`), '')
-  );
+      </li>`),
+      '',
+    );
 
   const getfilmDuration = () => {
     const durationInHour = Math.floor(runtime / 60);
@@ -50,13 +48,13 @@ const createFilmPopupTemplate = (film, commentsData) => {
 
   const getGenreTemplates = () => genre.reduce((htmlTemplate, gen) => (htmlTemplate += `<span class="film-details__genre">${gen}</span>`), '');
 
-  const releaseDate = (date !== null) ? humanizeTaskDueDate(date, 'DD MMMM YYYY') : '';
+  const releaseDate = date !== null ? humanizeFilmDate(date, 'DD MMMM YYYY') : '';
 
   const filmInWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const favoriteFilmClassName = favorite ? 'film-details__control-button--active' : '';
 
-  return (`<section class="film-details">
+  return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__top-container">
           <div class="film-details__close">
@@ -88,11 +86,11 @@ const createFilmPopupTemplate = (film, commentsData) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${writers.length > 1 ? writers.join(', '): writers}</td>
+                  <td class="film-details__cell">${writers.length > 1 ? writers.join(', ') : writers}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${actors.length > 1 ? actors.join(', '): actors}</td>
+                  <td class="film-details__cell">${actors.length > 1 ? actors.join(', ') : actors}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
@@ -107,7 +105,7 @@ const createFilmPopupTemplate = (film, commentsData) => {
                   <td class="film-details__cell">${releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">${genre.length > 1 ? 'Genres': 'Genre'}</td>
+                  <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
                   <td class="film-details__cell">${getGenreTemplates()}</td>
                 </tr>
               </table>
@@ -161,7 +159,7 @@ const createFilmPopupTemplate = (film, commentsData) => {
           </section>
         </div>
       </form>
-  </section>`);
+  </section>`;
 };
 
 export default class FilmPopupView extends AbstractView {
@@ -183,10 +181,41 @@ export default class FilmPopupView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
   };
 
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+  };
+
+  setWatchedClickHandler = (callback) => {
+    this._callback.watchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
+  };
+
+  setWatchlistClickHandler = (callback) => {
+    this._callback.watchlistClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
+  };
+
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
   };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+    this.element.querySelector('.film-details__control-button--favorite').classList.toggle('film-details__control-button--active');
+  };
+
+  #watchedClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchedClick();
+    this.element.querySelector('.film-details__control-button--watched').classList.toggle('film-details__control-button--active');
+  };
+
+  #watchlistClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchlistClick();
+    this.element.querySelector('.film-details__control-button--watchlist').classList.toggle('film-details__control-button--active');
+  };
 }
-
-
