@@ -1,4 +1,3 @@
-
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
 import { render, remove, replace } from '../framework/render.js';
@@ -7,18 +6,18 @@ export default class FilmPresenter {
   #film = null;
   #comments = null;
   #changeData = null;
-  #filmListContainer = null;
   #filmCardComponent = null;
   #filmPopupComponent = null;
+  #currentFilmsContainer = null;
 
-  constructor(comments, changeData) {
+  constructor(comments, changeData, container) {
     this.#comments = comments;
     this.#changeData = changeData;
+    this.#currentFilmsContainer = container;
   }
 
-  init = (film, container) => {
+  init = (film) => {
     this.#film = film;
-    this.#filmListContainer = container;
 
     const prevFilmComponent = this.#filmCardComponent;
 
@@ -29,11 +28,11 @@ export default class FilmPresenter {
     this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
     if (prevFilmComponent === null) {
-      render(this.#filmCardComponent, this.#filmListContainer);
+      render(this.#filmCardComponent, this.#currentFilmsContainer);
       return;
     }
 
-    if (this.#filmListContainer.contains(prevFilmComponent.element)) {
+    if (this.#currentFilmsContainer.contains(prevFilmComponent.element)) {
       replace(this.#filmCardComponent, prevFilmComponent);
 
       if (document.querySelector('.film-details')) {
@@ -85,26 +84,38 @@ export default class FilmPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#film, userDetails: {
-      favorite: !this.#film.userDetails.favorite,
-      alreadyWatched: this.#film.userDetails.alreadyWatched,
-      watchlist: this.#film.userDetails.watchlist
-    }}, this.#filmListContainer);
+    this.#changeData(
+      {...this.#film,
+        userDetails: {
+          favorite: !this.#film.userDetails.favorite,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          watchlist: this.#film.userDetails.watchlist,
+        },
+      }
+    );
   };
 
   #handleWatchedClick = () => {
-    this.#changeData({...this.#film, userDetails: {
-      favorite: this.#film.userDetails.favorite,
-      alreadyWatched: !this.#film.userDetails.alreadyWatched,
-      watchlist: this.#film.userDetails.watchlist
-    }}, this.#filmListContainer);
+    this.#changeData(
+      {...this.#film,
+        userDetails: {
+          favorite: this.#film.userDetails.favorite,
+          alreadyWatched: !this.#film.userDetails.alreadyWatched,
+          watchlist: this.#film.userDetails.watchlist,
+        },
+      }
+    );
   };
 
   #handleWatchlistClick = () => {
-    this.#changeData({...this.#film, userDetails: {
-      favorite: this.#film.userDetails.favorite,
-      alreadyWatched: this.#film.userDetails.alreadyWatched,
-      watchlist: !this.#film.userDetails.watchlist
-    }}, this.#filmListContainer);
+    this.#changeData(
+      {...this.#film,
+        userDetails: {
+          favorite: this.#film.userDetails.favorite,
+          alreadyWatched: this.#film.userDetails.alreadyWatched,
+          watchlist: !this.#film.userDetails.watchlist,
+        },
+      },
+    );
   };
 }

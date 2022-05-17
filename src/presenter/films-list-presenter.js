@@ -50,16 +50,39 @@ export default class FilmsListPresenter {
     }
   };
 
-  #handleFilmChange = (updatedFilm, container) => {
+  #handleFilmChange = (updatedFilm) => {
     this.#films = updateItem(this.#films, updatedFilm);
-    this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm, container);
+
+    if (this.#filmsPresenter.get(updatedFilm.id)) {
+      this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
+
+    const topRatedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-topRated`);
+    if (topRatedFilm) {
+      topRatedFilm.init(updatedFilm);
+    }
+
+    const mostCommentedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-mostComm`);
+    if (mostCommentedFilm) {
+      mostCommentedFilm.init(updatedFilm);
+    }
   };
 
-  #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#comments, this.#handleFilmChange);
+  #renderFilm = (film, container, category) => {
+    const filmPresenter = new FilmPresenter(this.#comments, this.#handleFilmChange, container);
 
-    filmPresenter.init(film, container);
-    this.#filmsPresenter.set(film.id, filmPresenter);
+    filmPresenter.init(film);
+
+    switch (category) {
+      case 'topRated':
+        this.#filmsPresenter.set(`${film.id}-topRated`, filmPresenter);
+        break;
+      case 'mostComm':
+        this.#filmsPresenter.set(`${film.id}-mostComm`, filmPresenter);
+        break;
+      default:
+        this.#filmsPresenter.set(film.id, filmPresenter);
+    }
   };
 
   #renderNoFilms = () => {
@@ -106,7 +129,7 @@ export default class FilmsListPresenter {
       .slice()
       .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating)
       .slice(0, RATED_FILMS_DISPLAYED)
-      .forEach((topRatedFilm) => this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
+      .forEach((topRatedFilm) => this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element, 'topRated'));
   };
 
   #renderMostCommentedList = () => {
@@ -117,7 +140,7 @@ export default class FilmsListPresenter {
       .slice()
       .sort((a, b) => b.comments.length - a.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)
-      .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
+      .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element, 'mostComm'));
   };
 
   #handleShowMoreBtnClick = () => {
