@@ -50,26 +50,9 @@ export default class FilmsListPresenter {
     }
   };
 
-  #handleFilmChange = (updatedFilm) => {
-    this.#films = updateItem(this.#films, updatedFilm);
-
-    if (this.#filmsPresenter.get(updatedFilm.id)) {
-      this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
-    }
-
-    const topRatedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-topRated`);
-    if (topRatedFilm) {
-      topRatedFilm.init(updatedFilm);
-    }
-
-    const mostCommentedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-mostComm`);
-    if (mostCommentedFilm) {
-      mostCommentedFilm.init(updatedFilm);
-    }
-  };
 
   #renderFilm = (film, container, category) => {
-    const filmPresenter = new FilmPresenter(this.#comments, this.#handleFilmChange, container);
+    const filmPresenter = new FilmPresenter(this.#comments, this.#handleFilmChange, this.#handleСlosePopup, container);
 
     filmPresenter.init(film);
 
@@ -153,5 +136,29 @@ export default class FilmsListPresenter {
     if (this.#renderedFilmCount >= this.#films.length) {
       remove(this.#showMoreBtnComponent);
     }
+  };
+
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+
+    if (this.#filmsPresenter.get(updatedFilm.id)) {
+      this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
+    }
+
+    const topRatedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-topRated`);
+    if (topRatedFilm) {
+      topRatedFilm.init(updatedFilm);
+    }
+
+    const mostCommentedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-mostComm`);
+    if (mostCommentedFilm) {
+      mostCommentedFilm.init(updatedFilm);
+    }
+  };
+
+  #handleСlosePopup = () => {
+    this.#filmsPresenter.forEach((presenter) => {
+      presenter.removeFilmPopup();
+    });
   };
 }
