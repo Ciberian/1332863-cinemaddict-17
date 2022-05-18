@@ -1,6 +1,6 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
-import { render, remove, replace } from '../framework/render.js';
+import { render, remove, replace, RenderPosition } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
@@ -56,7 +56,7 @@ export default class FilmPresenter {
     const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
     this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
 
-    render(this.#filmPopupComponent, siteFooterElement, 'afterend');
+    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTERBEGIN);
     document.body.classList.add('hide-overflow');
 
     document.addEventListener('keydown', this.#onDocumentKeyDown);
