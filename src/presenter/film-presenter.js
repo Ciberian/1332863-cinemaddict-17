@@ -1,19 +1,21 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
-import { render, remove, replace } from '../framework/render.js';
+import { render, remove, replace, RenderPosition } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
   #comments = null;
   #changeData = null;
+  #closeAnyOpenPopup = null;
   #filmCardComponent = null;
   #filmPopupComponent = null;
   #currentFilmsContainer = null;
 
-  constructor(comments, changeData, container) {
+  constructor(comments, changeData, closeAnyOpenPopup, container) {
     this.#comments = comments;
     this.#changeData = changeData;
     this.#currentFilmsContainer = container;
+    this.#closeAnyOpenPopup = closeAnyOpenPopup;
   }
 
   init = (film) => {
@@ -48,15 +50,13 @@ export default class FilmPresenter {
   };
 
   #addFilmPopup = (film, commentsList) => {
-    if (document.querySelector('.film-details')) {
-      document.querySelector('.film-details').remove();
-    }
+    this.#closeAnyOpenPopup();
 
     const siteFooterElement = document.querySelector('.footer');
     const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
     this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
 
-    render(this.#filmPopupComponent, siteFooterElement, 'afterend');
+    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
     document.body.classList.add('hide-overflow');
 
     document.addEventListener('keydown', this.#onDocumentKeyDown);
@@ -66,20 +66,20 @@ export default class FilmPresenter {
     this.#filmPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
   };
 
-  #removeFilmPopup = () => {
+  removeFilmPopup = () => {
     document.body.classList.remove('hide-overflow');
     remove(this.#filmPopupComponent);
     document.removeEventListener('keydown', this.#onDocumentKeyDown);
   };
 
   #onCloseBtnClick = () => {
-    this.#removeFilmPopup();
+    this.removeFilmPopup();
   };
 
   #onDocumentKeyDown = (evt) => {
     if (evt.code === 'Escape') {
       evt.preventDefault();
-      this.#removeFilmPopup();
+      this.removeFilmPopup();
     }
   };
 

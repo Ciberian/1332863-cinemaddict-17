@@ -14,7 +14,7 @@ const DEFAULT_COMMENTS = [
   'Нуу, такое... На раз глянуть сойдёт',
   'Что за чушню они сняли, кто на это вообще выделяет деньги.',
   'Безумноумопмрачительнонереальнокрутотенечковый фильм.',
-  'Фильм не для массового зрителя, ничтоже сумняшемся его не понять...'
+  'Фильм не для массового зрителя, ничтоже сумняшеся его не понять...'
 ];
 
 const DEFAULT_AUTHORS = ['Vasya Pupkin', 'Pupka Vasin', 'Shwarz', 'Rembo Ibragimivch', 'Thanos', 'Big_Frontender_Boss'];
@@ -29,4 +29,10 @@ const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS, FilterType };
+const SortType = {
+  DEFAULT: 'default',
+  DATE_DOWN: 'date-down',
+  RATE_DOWN: 'rate-down'
+};
+
+export { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS, FilterType, SortType };
