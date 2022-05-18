@@ -56,7 +56,7 @@ export default class FilmPresenter {
     const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
     this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
 
-    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTERBEGIN);
+    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
     document.body.classList.add('hide-overflow');
 
     document.addEventListener('keydown', this.#onDocumentKeyDown);
