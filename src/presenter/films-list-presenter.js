@@ -133,7 +133,7 @@ export default class FilmsListPresenter {
       .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element, 'mostComm'));
   };
 
-  #sortTasks = (sortType) => {
+  #sortFilms = (sortType) => {
     switch (sortType) {
       case SortType.RATE_DOWN:
         this.#films.sort((filmA, filmB) =>filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
@@ -160,7 +160,7 @@ export default class FilmsListPresenter {
       return;
     }
 
-    this.#sortTasks(sortType);
+    this.#sortFilms(sortType);
     this.#clearFilmList();
 
     this.#renderFilmList();
