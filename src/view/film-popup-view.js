@@ -177,7 +177,9 @@ export default class FilmPopupView extends AbstractStatefulView {
     let imgName = imgSrc.split('/');
     imgName = imgName[imgName.length-1].replace(/\.([A-Za-z]{3,4})/, '');
 
+    const scrollPosition = this.element.scrollTop;
     this.updateElement({selectedEmotion: imgName});
+    this.element.scrollTop = scrollPosition;
   };
 
   #commentInputHandler = (evt) => {
