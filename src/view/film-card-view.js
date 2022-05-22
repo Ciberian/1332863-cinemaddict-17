@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeFilmDate } from '../utils.js';
 
+const MAX_DESCRIPTION_LENGTH = 140;
+
 const createFilmCardTemplate = (film) => {
   const {
     comments,
@@ -29,6 +31,8 @@ const createFilmCardTemplate = (film) => {
   const alreadyWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
   const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
 
+  const getCertainLengthDescription = () => (description.length > 140) ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}...` : description;
+
   return `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
@@ -39,7 +43,7 @@ const createFilmCardTemplate = (film) => {
           <span class="film-card__genre">${genre.length > 1 ? genre.join(', ') : genre}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
-        <p class="film-card__description">${description}</p>
+        <p class="film-card__description">${getCertainLengthDescription()}</p>
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">
