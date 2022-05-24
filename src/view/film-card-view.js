@@ -1,5 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeFilmDate } from '../utils.js';
+import { humanizeFilmDate, getFilmDuration } from '../utils/films.js';
+
+const MAX_DESCRIPTION_LENGTH = 140;
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -16,18 +18,12 @@ const createFilmCardTemplate = (film) => {
     userDetails: { watchlist, alreadyWatched, favorite },
   } = film;
 
-  const getfilmDuration = () => {
-    const durationInHour = Math.floor(runtime / 60);
-    const restMinutes = runtime % 60;
-
-    return `${durationInHour}h ${restMinutes}m`;
-  };
-
   const releaseDate = date !== null ? humanizeFilmDate(date, 'YYYY') : '';
-
   const filmInWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
   const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
+
+  const getCertainLengthDescription = () => (description.length > MAX_DESCRIPTION_LENGTH) ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}...` : description;
 
   return `<article class="film-card">
       <a class="film-card__link">
@@ -35,11 +31,11 @@ const createFilmCardTemplate = (film) => {
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${releaseDate}</span>
-          <span class="film-card__duration">${getfilmDuration()}</span>
+          <span class="film-card__duration">${getFilmDuration(runtime)}</span>
           <span class="film-card__genre">${genre.length > 1 ? genre.join(', ') : genre}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
-        <p class="film-card__description">${description}</p>
+        <p class="film-card__description">${getCertainLengthDescription()}</p>
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">

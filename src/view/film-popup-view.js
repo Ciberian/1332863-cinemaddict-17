@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeFilmDate } from '../utils.js';
+import { humanizeFilmDate, getFilmDuration } from '../utils/films.js';
 
-const createFilmPopupTemplate = (state, commentsData) => {
+const createFilmPopupTemplate = (state) => {
   const {
     filmInfo: {
       title,
@@ -19,27 +19,20 @@ const createFilmPopupTemplate = (state, commentsData) => {
     },
     userDetails: { watchlist, alreadyWatched, favorite },
     selectedEmotion,
-    typedComment
+    typedComment,
+    commentsData
   } = state;
 
+  const releaseDate = date !== null ? humanizeFilmDate(date, 'DD MMMM YYYY') : '';
   const filmInWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const favoriteFilmClassName = favorite ? 'film-details__control-button--active' : '';
 
-  const releaseDate = date !== null ? humanizeFilmDate(date, 'DD MMMM YYYY') : '';
-
-  const getfilmDuration = () => {
-    const durationInHour = Math.floor(runtime / 60);
-    const restMinutes = runtime % 60;
-
-    return `${durationInHour}h ${restMinutes}m`;
-  };
-
   const getGenreTemplates = () => genre.reduce((htmlTemplate, gen) => (htmlTemplate += `<span class="film-details__genre">${gen}</span>`), '');
 
   const createComments = () => commentsData.reduce(
-    (htmlTemplate, { author, comment, date: commentDate, emotion }) =>
-      (htmlTemplate += `<li class="film-details__comment">
+    (htmlTemplate, { id, author, comment, date: commentDate, emotion }) =>
+      (htmlTemplate += `<li class="film-details__comment" data-id=${id}>
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
         </span>
@@ -105,7 +98,7 @@ const createFilmPopupTemplate = (state, commentsData) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${getfilmDuration()}</td>
+                  <td class="film-details__cell">${getFilmDuration(runtime)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
@@ -149,19 +142,16 @@ const createFilmPopupTemplate = (state, commentsData) => {
 };
 
 export default class FilmPopupView extends AbstractStatefulView {
-  #comments = null;
   #commentData = null;
 
   constructor(film, comments) {
     super();
-    this._state = FilmPopupView.convertFilmToState(film);
-    this.#comments = comments;
-
+    this._state = FilmPopupView.convertFilmToState(film, comments);
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmPopupTemplate(this._state, this.#comments);
+    return createFilmPopupTemplate(this._state);
   }
 
   _restoreHandlers = () => {
@@ -191,14 +181,27 @@ export default class FilmPopupView extends AbstractStatefulView {
     });
   };
 
+  #commentDeleteHandler = (evt) => {
+    evt.preventDefault();
+    const commentId = evt.target.closest('.film-details__comment').dataset.id;
+    const updatedComments = this._state.commentsData.filter((comment) => comment.id !== Number(commentId));
+
+    const scrollPosition = this.element.scrollTop;
+    this.updateElement({commentsData: updatedComments});
+    this.element.scrollTop = scrollPosition;
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelectorAll('.film-details__emoji-list img')
       .forEach((img) => img.addEventListener('click', (evt) => this.#emojiAddHandler(evt, img.src)));
+    this.element.querySelectorAll('.film-details__comment-delete')
+      .forEach((commentDeleteBtn) => commentDeleteBtn.addEventListener('click', this.#commentDeleteHandler));
     this.element.querySelector('.film-details__comment-input')
       .addEventListener('input', this.#commentInputHandler);
   };
 
-  static convertFilmToState = (film) => ({...film,
+  static convertFilmToState = (film, comments) => ({...film,
+    commentsData: comments,
     typedComment: null,
     selectedEmotion: null,
   });
