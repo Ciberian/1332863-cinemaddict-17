@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeFilmDate } from '../utils.js';
+import { humanizeFilmDate, getFilmDuration } from '../utils/films.js';
 
 const createFilmPopupTemplate = (state) => {
   const {
@@ -23,18 +23,10 @@ const createFilmPopupTemplate = (state) => {
     commentsData
   } = state;
 
+  const releaseDate = date !== null ? humanizeFilmDate(date, 'DD MMMM YYYY') : '';
   const filmInWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
   const alreadyWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
   const favoriteFilmClassName = favorite ? 'film-details__control-button--active' : '';
-
-  const releaseDate = date !== null ? humanizeFilmDate(date, 'DD MMMM YYYY') : '';
-
-  const getfilmDuration = () => {
-    const durationInHour = Math.floor(runtime / 60);
-    const restMinutes = runtime % 60;
-
-    return `${durationInHour}h ${restMinutes}m`;
-  };
 
   const getGenreTemplates = () => genre.reduce((htmlTemplate, gen) => (htmlTemplate += `<span class="film-details__genre">${gen}</span>`), '');
 
@@ -106,7 +98,7 @@ const createFilmPopupTemplate = (state) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${getfilmDuration()}</td>
+                  <td class="film-details__cell">${getFilmDuration(runtime)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>

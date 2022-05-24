@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomArrayElement } from '../utils.js';
+import { getRandomInteger, getRandomArrayElement } from '../utils/common.js';
 import { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS } from '../const.js';
 import { nanoid } from 'nanoid';
 

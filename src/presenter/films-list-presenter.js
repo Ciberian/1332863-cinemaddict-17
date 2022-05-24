@@ -8,7 +8,7 @@ import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
-import { updateItem, sortFilmsDateDown } from '../utils.js';
+import { updateItem, sortFilmsDateDown } from '../utils/films.js';
 import { SortType } from '../const.js';
 
 const RATED_FILMS_DISPLAYED = 2;
