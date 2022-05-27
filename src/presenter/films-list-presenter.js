@@ -8,7 +8,7 @@ import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
-import { updateItem, sortFilmsDateDown } from '../utils/films.js';
+import { sortFilmsDateDown } from '../utils/films.js';
 import { SortType } from '../const.js';
 
 const RATED_FILMS_DISPLAYED = 2;
@@ -33,10 +33,8 @@ export default class FilmsListPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
-  #films = [];// delete it
   #comments = [];
   #filmsPresenter = new Map();
-  #sourcedFilmList = [];// delete it
   #currentSortType = SortType.DEFAULT;
 
   constructor(filmsContainer, filmsModel, commentsModel) {
@@ -47,7 +45,14 @@ export default class FilmsListPresenter {
   }
 
   get films() {
-    return this.#filmsModel.films;
+    switch (this.#currentSortType) {
+      case SortType.RATE_DOWN:
+        return [...this.#filmsModel.films].sort((filmA, filmB) =>filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
+      case SortType.DATE_DOWN:
+        return [...this.#filmsModel.films].sort(sortFilmsDateDown);
+      default:
+        return this.#filmsModel.films;
+    }
   }
 
   get comments() {
@@ -55,19 +60,16 @@ export default class FilmsListPresenter {
   }
 
   init = () => {
-    this.#films = [...this.#filmsModel.films]; // delete it
-    this.#sourcedFilmList = [...this.#filmsModel.films]; // delete it
-
     this.#renderFilmList();
 
-    if (this.#films.length) {
+    if (this.films.length) {
       this.#renderTopRatedList();
       this.#renderMostCommentedList();
     }
   };
 
   #renderSort = () => {
-    if(this.#films.length) {
+    if(this.films.length) {
       render(this.#sortComponent, this.#filmsSectionComponent.element, RenderPosition.BEFOREBEGIN);
       this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
     }
@@ -90,24 +92,27 @@ export default class FilmsListPresenter {
     }
   };
 
-  #renderFilmList = () => {
-    render(this.#filmsSectionComponent, this.#filmsContainer);
+  #renderFilms = (films, container, category = null) => {
+    films.forEach((film) => this.#renderFilm(film, container, category));
+  };
 
-    if (!this.#films.length) {
+  #renderFilmList = () => {
+    const filmCount = this.films.length;
+    const films = this.films.slice(0, Math.min(filmCount, FILM_COUNT_PER_STEP));
+
+    render(this.#filmsSectionComponent, this.#filmsContainer);
+    if (!filmCount) {
       this.#renderNoFilms();
       return;
     }
 
     this.#renderSort();
-
     render(this.#filmsListComponent, this.#filmsSectionComponent.element);
     render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
-    for (let i = 0; i < Math.min(this.#films.length, FILM_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#films[i], this.#filmsListContainerComponent.element);
-    }
+    this.#renderFilms(films, this.#filmsListContainerComponent.element);
 
-    if (this.#films.length > FILM_COUNT_PER_STEP) {
+    if (filmCount > FILM_COUNT_PER_STEP) {
       this.#renderShowMoreBtn();
     }
   };
@@ -125,7 +130,7 @@ export default class FilmsListPresenter {
     render(this.#topRatedFilmsComponent, this.#filmsSectionComponent.element);
     render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
 
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating)
       .slice(0, RATED_FILMS_DISPLAYED)
@@ -136,26 +141,11 @@ export default class FilmsListPresenter {
     render(this.#mostCommentedFilmsComponent, this.#filmsSectionComponent.element);
     render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
 
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)
       .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element, 'mostComm'));
-  };
-
-  #sortFilms = (sortType) => {
-    switch (sortType) {
-      case SortType.RATE_DOWN:
-        this.#films.sort((filmA, filmB) =>filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
-        break;
-      case SortType.DATE_DOWN:
-        this.#films.sort(sortFilmsDateDown);
-        break;
-      default:
-        this.#films = [...this.#sourcedFilmList];
-    }
-
-    this.#currentSortType = sortType;
   };
 
   #clearFilmList = () => {
@@ -170,18 +160,14 @@ export default class FilmsListPresenter {
       return;
     }
 
-    this.#sortFilms(sortType);
+    this.#currentSortType = sortType;
     this.#clearFilmList();
-
     this.#renderFilmList();
     this.#renderTopRatedList();
     this.#renderMostCommentedList();
   };
 
   #handleFilmChange = (updatedFilm) => {
-    this.#films = updateItem(this.#films, updatedFilm);
-    this.#sourcedFilmList = updateItem(this.#sourcedFilmList, updatedFilm);
-
     if (this.#filmsPresenter.get(updatedFilm.id)) {
       this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
     }
@@ -198,13 +184,14 @@ export default class FilmsListPresenter {
   };
 
   #handleShowMoreBtnClick = () => {
-    this.#films
-      .slice(this.#renderedFilmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP)
-      .forEach((film) => this.#renderFilm(film, this.#filmsListContainerComponent.element));
+    const filmCount = this.films.length;
+    const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + FILM_COUNT_PER_STEP);
+    const films = this.films.slice(this.#renderedFilmCount, newRenderedFilmCount);
 
-    this.#renderedFilmCount += FILM_COUNT_PER_STEP;
+    this.#renderFilms(films, this.#filmsListContainerComponent.element);
+    this.#renderedFilmCount = newRenderedFilmCount;
 
-    if (this.#renderedFilmCount >= this.#films.length) {
+    if (this.#renderedFilmCount >= filmCount) {
       remove(this.#showMoreBtnComponent);
     }
   };
