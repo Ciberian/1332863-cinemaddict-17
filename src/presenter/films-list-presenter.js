@@ -32,21 +32,31 @@ export default class FilmsListPresenter {
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmsContainer = null;
   #filmsModel = null;
-  #films = [];
+  #commentsModel = null;
+  #films = [];// delete it
   #comments = [];
   #filmsPresenter = new Map();
-  #sourcedFilmList = [];
+  #sourcedFilmList = [];// delete it
   #currentSortType = SortType.DEFAULT;
 
-  constructor(filmsContainer, filmsModel) {
+  constructor(filmsContainer, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
-    this.#comments = [...this.#filmsModel.comments];
+    this.#commentsModel = commentsModel;
+    this.#comments = [...this.#commentsModel.comments];
+  }
+
+  get films() {
+    return this.#filmsModel.films;
+  }
+
+  get comments() {
+    return this.#commentsModel.comments;
   }
 
   init = () => {
-    this.#films = [...this.#filmsModel.films];
-    this.#sourcedFilmList = [...this.#filmsModel.films];
+    this.#films = [...this.#filmsModel.films]; // delete it
+    this.#sourcedFilmList = [...this.#filmsModel.films]; // delete it
 
     this.#renderFilmList();
 
