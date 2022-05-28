@@ -1,5 +1,6 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupView from '../view/film-popup-view.js';
+import { UserAction, UpdateType } from '../const.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 
 export default class FilmPresenter {
@@ -85,6 +86,8 @@ export default class FilmPresenter {
 
   #handleFavoriteClick = () => {
     this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       {...this.#film,
         userDetails: {
           favorite: !this.#film.userDetails.favorite,
@@ -97,6 +100,8 @@ export default class FilmPresenter {
 
   #handleWatchedClick = () => {
     this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       {...this.#film,
         userDetails: {
           favorite: this.#film.userDetails.favorite,
@@ -109,6 +114,8 @@ export default class FilmPresenter {
 
   #handleWatchlistClick = () => {
     this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       {...this.#film,
         userDetails: {
           favorite: this.#film.userDetails.favorite,

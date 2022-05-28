@@ -35,4 +35,16 @@ const SortType = {
   RATE_DOWN: 'rate-down'
 };
 
-export { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS, FilterType, SortType };
+const UserAction = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export { DEFAULT_POSTERS, DEFAULT_COMMENTS, DEFAULT_AUTHORS, DEFAULT_GENRES, EMOTIONS, FilterType, SortType, UserAction, UpdateType };

@@ -9,20 +9,6 @@ const getFilmDuration = (runtime) => {
   return `${durationInHour}h ${restMinutes}m`;
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -45,4 +31,4 @@ const sortFilmsDateDown = (filmA, filmB) => {
   return weight ?? dayjs(filmA.filmInfo.release.date).diff(dayjs(filmB.filmInfo.release.date));
 };
 
-export { humanizeFilmDate, getFilmDuration, updateItem, sortFilmsDateDown };
+export { humanizeFilmDate, getFilmDuration, sortFilmsDateDown };
