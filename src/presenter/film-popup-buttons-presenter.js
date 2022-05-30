@@ -1,0 +1,96 @@
+import FilmPopupButtonsView from '../view/film-popup-buttons-view.js';
+import { UpdateType } from '../const.js';
+import { render, remove, replace } from '../framework/render.js';
+
+export default class FilmPopupButtonsPresenter {
+  #changeData = null;
+  #filmsModel = null;
+  #buttonsContainer = null;
+  #buttonsComponent = null;
+
+  constructor(changeData, filmsModel, buttonsContainer) {
+    this.#changeData = changeData;
+    this.#filmsModel = filmsModel;
+    this.#buttonsContainer = buttonsContainer;
+
+    this.#filmsModel.addObserver(this.#handlePopupButtonsModelEvent);
+  }
+
+  init = (film) => {
+    const prevButtonsComponent = this.#buttonsComponent;
+
+    this.#buttonsComponent = new FilmPopupButtonsView(film);
+
+    this.#buttonsComponent.setFavoriteClickHandler(() => this.#handleFavoriteClick(film));
+    this.#buttonsComponent.setWatchedClickHandler(() => this.#handleWatchedClick(film));
+    this.#buttonsComponent.setWatchlistClickHandler(() => this.#handleWatchlistClick(film));
+
+    if (prevButtonsComponent === null) {
+      render(this.#buttonsComponent, this.#buttonsContainer);
+      return;
+    }
+
+    if (this.#buttonsContainer.contains(prevButtonsComponent.element)) {
+      replace(this.#buttonsComponent, prevButtonsComponent);
+    }
+
+    remove(prevButtonsComponent);
+  };
+
+  destroy = () => {
+    remove(this.#buttonsComponent);
+  };
+
+  #handlePopupButtonsModelEvent = (updateType, updatedFilm) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.init(updatedFilm);
+        break;
+      case UpdateType.MINOR:
+        this.init(updatedFilm);
+        break;
+      case UpdateType.MAJOR:
+        this.init(updatedFilm);
+        break;
+    }
+  };
+
+  #handleFavoriteClick = (film) => {
+    this.#changeData(
+      UpdateType.PATCH,
+      {...film,
+        userDetails: {
+          favorite: !film.userDetails.favorite,
+          alreadyWatched: film.userDetails.alreadyWatched,
+          watchlist: film.userDetails.watchlist,
+        },
+      }
+    );
+  };
+
+  #handleWatchedClick = (film) => {
+    this.#changeData(
+      UpdateType.PATCH,
+      {...film,
+        userDetails: {
+          favorite: film.userDetails.favorite,
+          alreadyWatched: !film.userDetails.alreadyWatched,
+          watchlist: film.userDetails.watchlist,
+        },
+      }
+    );
+  };
+
+  #handleWatchlistClick = (film) => {
+    this.#changeData(
+      UpdateType.PATCH,
+      {...film,
+        userDetails: {
+          favorite: film.userDetails.favorite,
+          alreadyWatched: film.userDetails.alreadyWatched,
+          watchlist: !film.userDetails.watchlist,
+        },
+      },
+    );
+  };
+}
