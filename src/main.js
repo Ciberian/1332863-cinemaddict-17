@@ -1,6 +1,6 @@
 import UserNameView from './view/user-name-view.js';
 import FilterView from './view/filter-view.js';
-import FilmsListPresenter from './presenter/films-list-presenter.js';
+import FilmBoardPresenter from './presenter/film-board-presenter.js';
 import FilmCountView from './view/film-count-view.js';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
@@ -12,7 +12,7 @@ const siteMainElement = document.querySelector('.main');
 const siteFooterStatisticsElement = document.querySelector('.footer__statistics');
 const filmsModel = new FilmsModel();
 const commentsModel = new CommentsModel();
-const filmsListPresenter = new FilmsListPresenter(siteMainElement, filmsModel, commentsModel);
+const filmsListPresenter = new FilmBoardPresenter(siteMainElement, filmsModel, commentsModel);
 
 render(new UserNameView(), siteHeaderElement);
 
