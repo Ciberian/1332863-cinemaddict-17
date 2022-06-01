@@ -1,14 +1,20 @@
 import FilmPopupButtonsView from '../view/film-popup-buttons-view.js';
+import FilmPopupPresenter from './film-popup-presenter.js';
 import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPopupButtonsPresenter {
+  #comments = null;
   #changeData = null;
   #filmsModel = null;
   #buttonsContainer = null;
   #buttonsComponent = null;
+  #prevFilm = null;
 
-  constructor(changeData, filmsModel, buttonsContainer) {
+  #filmPopupPresenter = new FilmPopupPresenter();
+
+  constructor(changeData, filmsModel, buttonsContainer, comments) {
+    this.#comments = comments;
     this.#changeData = changeData;
     this.#filmsModel = filmsModel;
     this.#buttonsContainer = buttonsContainer;
@@ -17,6 +23,7 @@ export default class FilmPopupButtonsPresenter {
   }
 
   init = (film) => {
+    this.#prevFilm = film;
     const prevButtonsComponent = this.#buttonsComponent;
 
     this.#buttonsComponent = new FilmPopupButtonsView(film);
@@ -44,13 +51,27 @@ export default class FilmPopupButtonsPresenter {
   #handlePopupButtonsModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.init(updatedFilm);
+        if (updatedFilm.id !== this.#prevFilm.id) {
+          this.#filmPopupPresenter.init(updatedFilm, this.#comments, this.#changeData, this.#filmsModel);
+        } else {
+          this.init(updatedFilm);
+        }
         break;
       case UpdateType.MINOR:
         this.init(updatedFilm);
+        if (updatedFilm.id !== this.#prevFilm.id) {
+          this.#filmPopupPresenter.init(updatedFilm, this.#comments, this.#changeData, this.#filmsModel);
+        } else {
+          this.init(updatedFilm);
+        }
         break;
       case UpdateType.MAJOR:
         this.init(updatedFilm);
+        if (updatedFilm.id !== this.#prevFilm.id) {
+          this.#filmPopupPresenter.init(updatedFilm, this.#comments, this.#changeData, this.#filmsModel);
+        } else {
+          this.init(updatedFilm);
+        }
         break;
     }
   };

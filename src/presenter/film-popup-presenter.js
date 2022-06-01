@@ -16,7 +16,7 @@ export default class FilmPopupPresenter {
     this.#filmPopupComponent.setClickHandler(this.#onCloseBtnClick);
     document.addEventListener('keydown', this.#onDocumentKeyDown);
 
-    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element);
+    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element, comments);
     const filmPopupCommentsPresenter = new FilmPopupCommentsPresenter();
 
     render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
