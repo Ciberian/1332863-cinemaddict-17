@@ -9,7 +9,7 @@ import TopRatedFilmsView from '../view/top-rated-films-view.js';
 import MostCommentedFilmsView from '../view/most-commented-films-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { sortFilmsDateDown } from '../utils/films.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { SortType, UpdateType } from '../const.js';
 
 const RATED_FILMS_DISPLAYED = 2;
 const COMMENTED_FILMS_DISPLAYED = 2;
@@ -34,7 +34,7 @@ export default class FilmBoardPresenter {
   #filmsModel = null;
   #commentsModel = null;
   #comments = [];
-  #filmsPresenter = new Map();
+  #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
 
   constructor(filmsContainer, filmsModel, commentsModel) {
@@ -44,7 +44,6 @@ export default class FilmBoardPresenter {
     this.#comments = [...this.#commentsModel.comments];
 
     this.#filmsModel.addObserver(this.#handleFilmsModelEvent);
-    this.#commentsModel.addObserver(this.#handleCommentsModelEvent);
   }
 
   get films() {
@@ -56,10 +55,6 @@ export default class FilmBoardPresenter {
       default:
         return this.#filmsModel.films;
     }
-  }
-
-  get comments() {
-    return this.#commentsModel.comments;
   }
 
   init = () => {
@@ -87,13 +82,13 @@ export default class FilmBoardPresenter {
 
     switch (category) {
       case 'topRated':
-        this.#filmsPresenter.set(`${film.id}-topRated`, filmPresenter);
+        this.#filmPresenters.set(`${film.id}-topRated`, filmPresenter);
         break;
       case 'mostComm':
-        this.#filmsPresenter.set(`${film.id}-mostComm`, filmPresenter);
+        this.#filmPresenters.set(`${film.id}-mostComm`, filmPresenter);
         break;
       default:
-        this.#filmsPresenter.set(film.id, filmPresenter);
+        this.#filmPresenters.set(film.id, filmPresenter);
     }
   };
 
@@ -159,8 +154,8 @@ export default class FilmBoardPresenter {
   #clearFilmBoard = ({ resetRenderedFilmCount = false, resetSortType = false } = {}) => {
     const filmCount = this.films.length;
 
-    this.#filmsPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmsPresenter.clear();
+    this.#filmPresenters.forEach((presenter) => presenter.destroy());
+    this.#filmPresenters.clear();
 
     remove(this.#sortComponent);
     remove(this.#showMoreBtnComponent);
@@ -176,55 +171,6 @@ export default class FilmBoardPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
-    switch (actionType) {
-      case UserAction.UPDATE_FILM:
-        this.#filmsModel.updateFilm(updateType, update);
-        break;
-      case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
-        break;
-      case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
-        break;
-    }
-  };
-
-  #handleFilmsModelEvent = (updateType, data) => {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        this.#filmsPresenter.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
-        this.#clearFilmBoard();
-        this.#renderFilmBoard();
-        break;
-      case UpdateType.MAJOR:
-        this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
-        this.#renderFilmBoard();
-        break;
-    }
-  };
-
-  #handleCommentsModelEvent = (updateType, data) => {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
-        this.#filmsPresenter.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
-        break;
-      case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
-        break;
-    }
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
-  };
-
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
@@ -237,21 +183,42 @@ export default class FilmBoardPresenter {
     this.#renderMostCommentedList();
   };
 
-  // #handleFilmChange = (updatedFilm) => {
-  //   if (this.#filmsPresenter.get(updatedFilm.id)) {
-  //     this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
-  //   }
+  #handleViewAction = (updateType, updatedFilm, scrollPosition) => {
+    this.#filmsModel.updateFilm(updateType, updatedFilm, scrollPosition);
+  };
 
-  //   const topRatedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-topRated`);
-  //   if (topRatedFilm) {
-  //     topRatedFilm.init(updatedFilm);
-  //   }
+  #handleFilmChange = (updatedFilm, scrollPosition) => {
+    const allFilms = this.#filmPresenters.get(updatedFilm.id);
+    if (allFilms) {
+      allFilms.init(updatedFilm, scrollPosition);
+    }
 
-  //   const mostCommentedFilm = this.#filmsPresenter.get(`${updatedFilm.id}-mostComm`);
-  //   if (mostCommentedFilm) {
-  //     mostCommentedFilm.init(updatedFilm);
-  //   }
-  // };
+    const topRatedFilm = this.#filmPresenters.get(`${updatedFilm.id}-topRated`);
+    if (topRatedFilm) {
+      topRatedFilm.init(updatedFilm, scrollPosition);
+    }
+
+    const mostCommentedFilm = this.#filmPresenters.get(`${updatedFilm.id}-mostComm`);
+    if (mostCommentedFilm) {
+      mostCommentedFilm.init(updatedFilm, scrollPosition);
+    }
+  };
+
+  #handleFilmsModelEvent = (updateType, updatedFilm, scrollPosition) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#handleFilmChange(updatedFilm, scrollPosition);
+        break;
+      case UpdateType.MINOR:
+        this.#clearFilmBoard();
+        this.#renderFilmBoard();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
+        this.#renderFilmBoard();
+        break;
+    }
+  };
 
   #handleShowMoreBtnClick = () => {
     const filmCount = this.films.length;
@@ -267,7 +234,7 @@ export default class FilmBoardPresenter {
   };
 
   #handleСlosePopup = () => {
-    this.#filmsPresenter.forEach((presenter) => {
+    this.#filmPresenters.forEach((presenter) => {
       presenter.removeFilmPopup();
     });
   };

@@ -2,7 +2,7 @@ import FilmPopupCommentsView from '../view/film-popup-comments-view.js';
 import CommentsModel from '../model/comments-model.js';
 import { render, remove, replace } from '../framework/render.js';
 
-export default class FilmPopupCommentsPresenter {
+export default class CommentsPresenter {
   #commentsComponent = null;
   #commentsModel = new CommentsModel();
 

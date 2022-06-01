@@ -11,7 +11,7 @@ export default class FilmsModel extends Observable {
     return this.#films;
   }
 
-  updateFilm = (updateType, update) => {
+  updateFilm = (updateType, update, scrollPosition) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
@@ -24,6 +24,6 @@ export default class FilmsModel extends Observable {
       ...this.#films.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType, update, scrollPosition);
   };
 }
