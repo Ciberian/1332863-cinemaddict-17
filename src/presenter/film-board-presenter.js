@@ -9,6 +9,7 @@ import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { sortFilmsDateDown } from '../utils/films.js';
+import { filter } from '../utils/filter.js';
 import { SortType, UpdateType } from '../const.js';
 
 const FILM_COUNT_PER_STEP = 5;
@@ -26,28 +27,35 @@ export default class FilmBoardPresenter {
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmsContainer = null;
   #commentsModel = null;
+  #filterModel = null;
   #filmsModel = null;
   #comments = [];
   #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
 
-  constructor(filmsContainer, filmsModel, commentsModel) {
+  constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
+    this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#comments = [...this.#commentsModel.comments];
 
-    this.#filmsModel.addObserver(this.#handleFilmsModelEvent);
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
+    const filterType = this.#filterModel.filter;
+    const films = this.#filmsModel.films;
+    const filteredFilms = filter[filterType](films);
+
     switch (this.#currentSortType) {
       case SortType.RATE_DOWN:
-        return [...this.#filmsModel.films].sort((filmA, filmB) =>filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
+        return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
       case SortType.DATE_DOWN:
-        return [...this.#filmsModel.films].sort(sortFilmsDateDown);
+        return filteredFilms.sort(sortFilmsDateDown);
       default:
-        return this.#filmsModel.films;
+        return filteredFilms;
     }
   }
 
@@ -57,7 +65,7 @@ export default class FilmBoardPresenter {
   };
 
   #renderSort = () => {
-    if(this.films.length) {
+    if (this.films.length) {
       this.#sortComponent = new SortView(this.#currentSortType);
       this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
 
@@ -118,7 +126,7 @@ export default class FilmBoardPresenter {
     }
   };
 
-  #clearFilmBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
+  #clearFilmBoard = ({ resetRenderedFilmCount = false, resetSortType = false } = {}) => {
     const filmCount = this.films.length;
     remove(this.#sortComponent);
     remove(this.#showMoreBtnComponent);
@@ -141,7 +149,7 @@ export default class FilmBoardPresenter {
     this.#filmsModel.updateFilm(updateType, updatedFilm);
   };
 
-  #handleFilmsModelEvent = (updateType, updatedFilm) => {
+  #handleModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
         if (this.#filmPresenters.get(updatedFilm.id)) {
@@ -153,7 +161,7 @@ export default class FilmBoardPresenter {
         this.#renderMainFilmList();
         break;
       case UpdateType.MAJOR:
-        this.#clearFilmBoard({resetRenderedFilmCount: true, resetSortType: true});
+        this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
         this.#renderMainFilmList();
         break;
     }
@@ -165,7 +173,7 @@ export default class FilmBoardPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearFilmBoard({resetRenderedFilmCount: true});
+    this.#clearFilmBoard({ resetRenderedFilmCount: true });
     this.#renderMainFilmList();
   };
 
