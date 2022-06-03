@@ -68,8 +68,9 @@ export default class MostCommentedFilmsPresenter {
         }
         break;
       case UpdateType.MINOR:
-        this.clearMostCommentedFilmList();
-        this.#renderMostCommentedFilms();
+        if (this.#mostCommentedFilmPresenters.get(updatedFilm.id)) {
+          this.#mostCommentedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
+        }
         break;
       case UpdateType.MAJOR:
         this.clearMostCommentedFilmList();

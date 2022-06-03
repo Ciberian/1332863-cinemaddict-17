@@ -68,11 +68,12 @@ export default class TopRatedFilmsPresenter {
         }
         break;
       case UpdateType.MINOR:
-        this.clearMostCommentedFilmList();
-        this.#renderTopRatedFilmList();
+        if (this.#topRatedFilmPresenters.get(updatedFilm.id)) {
+          this.#topRatedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
+        }
         break;
       case UpdateType.MAJOR:
-        this.clearMostCommentedFilmList();
+        this.clearTopRatedFilmList();
         this.#renderTopRatedFilmList();
         break;
     }

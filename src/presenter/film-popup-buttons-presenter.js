@@ -66,7 +66,7 @@ export default class FilmPopupButtonsPresenter {
 
   #handleFavoriteClick = (film) => {
     this.#changeData(
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       {...film,
         userDetails: {
           favorite: !film.userDetails.favorite,
@@ -79,7 +79,7 @@ export default class FilmPopupButtonsPresenter {
 
   #handleWatchedClick = (film) => {
     this.#changeData(
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       {...film,
         userDetails: {
           favorite: film.userDetails.favorite,
@@ -92,7 +92,7 @@ export default class FilmPopupButtonsPresenter {
 
   #handleWatchlistClick = (film) => {
     this.#changeData(
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       {...film,
         userDetails: {
           favorite: film.userDetails.favorite,
