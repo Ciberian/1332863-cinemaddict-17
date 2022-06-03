@@ -10,7 +10,7 @@ import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { sortFilmsDateDown } from '../utils/films.js';
 import { filter } from '../utils/filter.js';
-import { SortType, UpdateType } from '../const.js';
+import { SortType, UpdateType, FilterType } from '../const.js';
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -20,6 +20,7 @@ export default class FilmBoardPresenter {
   #filmsListContainerComponent = new FilmsContainerView();
 
   #sortComponent = null;
+  #noFilmsComponent = null;
   #showMoreBtnComponent = null;
   #topRatedFilmsPresenter = null;
   #mostCommentedFilmsPresenter = null;
@@ -32,6 +33,7 @@ export default class FilmBoardPresenter {
   #comments = [];
   #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
+  #filterType = FilterType.ALL;
 
   constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
@@ -45,9 +47,9 @@ export default class FilmBoardPresenter {
   }
 
   get films() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filter[filterType](films);
+    const filteredFilms = filter[this.#filterType](films);
 
     switch (this.#currentSortType) {
       case SortType.RATE_DOWN:
@@ -74,7 +76,8 @@ export default class FilmBoardPresenter {
   };
 
   #renderNoFilms = () => {
-    render(new ListEmptyView(), this.#filmsSectionComponent.element);
+    this.#noFilmsComponent = new ListEmptyView(this.#filterType);
+    render(this.#noFilmsComponent, this.#filmsSectionComponent.element, 'AFTERBEGIN');
   };
 
   #renderShowMoreBtn = () => {
@@ -133,6 +136,10 @@ export default class FilmBoardPresenter {
 
     this.#filmPresenters.forEach((presenter) => presenter.destroy());
     this.#filmPresenters.clear();
+
+    if (this.#noFilmsComponent) {
+      remove(this.#noFilmsComponent);
+    }
 
     if (resetRenderedFilmCount) {
       this.#renderedFilmCount = FILM_COUNT_PER_STEP;
