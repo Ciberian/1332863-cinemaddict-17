@@ -66,7 +66,11 @@ export default class FilterPresenter {
     this.init();
   };
 
-  #handleFilterTypeChange = (filterType) => {
+  #handleFilterTypeChange = (clickEvt) => {
+    const filterType = (clickEvt.target.nodeName === 'A') ?
+      clickEvt.target.hash.slice(1) :
+      clickEvt.target.parentNode.hash.slice(1);
+
     if (this.#filterModel.filter === filterType) {
       return;
     }
