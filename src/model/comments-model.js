@@ -1,10 +1,7 @@
 import Observable from '../framework/observable.js';
-import { generateComment } from '../mock/film.js';
-
-const COMMENTS_AMOUNT = 10;
 
 export default class CommentsModel extends Observable {
-  #comments = Array.from({length: COMMENTS_AMOUNT}, generateComment);
+  #comments = [];
 
   get comments () {
     return this.#comments;
@@ -31,6 +28,6 @@ export default class CommentsModel extends Observable {
       ...this.#comments.slice(index + 1),
     ];
 
-    this._notify(updateType);
+    this._notify(updateType, update);
   };
 }

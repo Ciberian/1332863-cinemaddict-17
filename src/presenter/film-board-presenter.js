@@ -1,3 +1,5 @@
+import UserNameView from '../view/user-name-view.js';
+import FilmCountView from '../view/film-count-view.js';
 import FilmsSectionView from '../view/films-section-view.js';
 import FilmsListView from '../view/films-list-view.js';
 import FilmsContainerView from '../view/films-container-view.js';
@@ -7,10 +9,10 @@ import MostCommentedFilmsPresenter from './most-commented-films-presenter.js';
 import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import { render, remove, RenderPosition } from '../framework/render.js';
-import { sortFilmsDateDown } from '../utils/films.js';
 import { filter } from '../utils/filter.js';
+import { sortFilmsDateDown } from '../utils/films.js';
 import { SortType, UpdateType, FilterType } from '../const.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -19,6 +21,7 @@ export default class FilmBoardPresenter {
   #filmsListComponent = new FilmsListView();
   #filmsListContainerComponent = new FilmsContainerView();
 
+  #userNameComponent = null;
   #sortComponent = null;
   #noFilmsComponent = null;
   #showMoreBtnComponent = null;
@@ -34,6 +37,7 @@ export default class FilmBoardPresenter {
   #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
+  #watchedFilms = null;
 
   constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
@@ -50,6 +54,7 @@ export default class FilmBoardPresenter {
     this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
     const filteredFilms = filter[this.#filterType](films);
+    this.#watchedFilms = filter[FilterType.HISTORY](films);
 
     switch (this.#currentSortType) {
       case SortType.RATE_DOWN:
@@ -108,6 +113,11 @@ export default class FilmBoardPresenter {
       return;
     }
 
+    this.#userNameComponent = new UserNameView(this.#watchedFilms.length);
+    if (this.#watchedFilms.length) {
+      render(this.#userNameComponent, document.querySelector('.header'));
+    }
+
     this.#renderSort();
     render(this.#filmsListComponent, this.#filmsSectionComponent.element, RenderPosition.AFTERBEGIN);
     render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
@@ -136,6 +146,10 @@ export default class FilmBoardPresenter {
 
     this.#filmPresenters.forEach((presenter) => presenter.destroy());
     this.#filmPresenters.clear();
+
+    if (this.#userNameComponent) {
+      remove(this.#userNameComponent);
+    }
 
     if (this.#noFilmsComponent) {
       remove(this.#noFilmsComponent);
@@ -170,6 +184,12 @@ export default class FilmBoardPresenter {
       case UpdateType.MAJOR:
         this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
         this.#renderMainFilmList();
+        break;
+      case UpdateType.INIT:
+        // this.#isLoading = false;
+        // remove(this.#loadingComponent);
+        this.init();
+        render(new FilmCountView(this.films.length), document.querySelector('.footer__statistics'));
         break;
     }
   };

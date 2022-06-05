@@ -93,6 +93,16 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this.element.scrollTop = scrollPosition;
   };
 
+  setDocumentKeydownHandler = (callback) => {
+    this._callback.addCommentClick = callback;
+    document.addEventListener('keydown', this.#addCommentKeydownHandler);
+  };
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteCommentClick = callback;
+    this.element.querySelectorAll('.film-details__comment-delete').addEventListener('click', this.#deleteCommentClickHandler);
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelectorAll('.film-details__emoji-list img')
       .forEach((img) => img.addEventListener('click', (evt) => this.#emojiAddHandler(evt, img.src)));
@@ -110,5 +120,15 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
   static convertStateToComments = ({selectedEmotion, typedComment}) => {
     this.#commentData = {emotion: selectedEmotion, comment: typedComment};
+  };
+
+  #addCommentKeydownHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.addCommentClick(evt);
+  };
+
+  #deleteCommentClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteCommentClick();
   };
 }
