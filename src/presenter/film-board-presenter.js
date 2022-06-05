@@ -7,6 +7,7 @@ import FilmPresenter from './film-presenter.js';
 import TopRatedFilmsPresenter from './top-rated-films-presenter.js';
 import MostCommentedFilmsPresenter from './most-commented-films-presenter.js';
 import SortView from '../view/sort-view.js';
+import LoadingView from '../view/film-loading-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import { filter } from '../utils/filter.js';
@@ -20,6 +21,7 @@ export default class FilmBoardPresenter {
   #filmsSectionComponent = new FilmsSectionView();
   #filmsListComponent = new FilmsListView();
   #filmsListContainerComponent = new FilmsContainerView();
+  #loadingComponent = new LoadingView();
 
   #userNameComponent = null;
   #sortComponent = null;
@@ -38,6 +40,7 @@ export default class FilmBoardPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
   #watchedFilms = null;
+  #isLoading = true;
 
   constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
@@ -107,6 +110,11 @@ export default class FilmBoardPresenter {
     const filmCount = films.length;
 
     render(this.#filmsSectionComponent, this.#filmsContainer);
+
+    if (this.#isLoading) {
+      render(this.#loadingComponent, this.#filmsSectionComponent.element, RenderPosition.AFTERBEGIN);
+      return;
+    }
 
     if (!filmCount) {
       this.#renderNoFilms();
@@ -186,8 +194,8 @@ export default class FilmBoardPresenter {
         this.#renderMainFilmList();
         break;
       case UpdateType.INIT:
-        // this.#isLoading = false;
-        // remove(this.#loadingComponent);
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.init();
         render(new FilmCountView(this.films.length), document.querySelector('.footer__statistics'));
         break;
