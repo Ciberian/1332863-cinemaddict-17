@@ -20,7 +20,6 @@ export default class FilmsApiService extends ApiService {
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
-
     return parsedResponse;
   };
 
@@ -45,9 +44,9 @@ export default class FilmsApiService extends ApiService {
 
     delete adaptedFilm.filmInfo;
     delete adaptedFilm.userDetails;
-    delete adaptedFilm.filmInfo.ageRating;
-    delete adaptedFilm.filmInfo.alternativeTitle;
-    delete adaptedFilm.filmInfo.totalRating;
+    delete adaptedFilm['film_info'].ageRating;
+    delete adaptedFilm['film_info'].alternativeTitle;
+    delete adaptedFilm['film_info'].totalRating;
 
     return adaptedFilm;
   };

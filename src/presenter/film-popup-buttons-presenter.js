@@ -67,39 +67,18 @@ export default class FilmPopupButtonsPresenter {
   #handleFavoriteClick = (film) => {
     this.#changeData(
       UpdateType.MINOR,
-      {...film,
-        userDetails: {
-          favorite: !film.userDetails.favorite,
-          alreadyWatched: film.userDetails.alreadyWatched,
-          watchlist: film.userDetails.watchlist,
-        },
-      }
-    );
+      {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
   };
 
   #handleWatchedClick = (film) => {
     this.#changeData(
       UpdateType.MINOR,
-      {...film,
-        userDetails: {
-          favorite: film.userDetails.favorite,
-          alreadyWatched: !film.userDetails.alreadyWatched,
-          watchlist: film.userDetails.watchlist,
-        },
-      }
-    );
+      {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
   };
 
   #handleWatchlistClick = (film) => {
     this.#changeData(
       UpdateType.MINOR,
-      {...film,
-        userDetails: {
-          favorite: film.userDetails.favorite,
-          alreadyWatched: film.userDetails.alreadyWatched,
-          watchlist: !film.userDetails.watchlist,
-        },
-      },
-    );
+      {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
   };
 }

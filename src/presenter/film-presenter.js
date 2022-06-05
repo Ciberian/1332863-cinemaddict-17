@@ -49,39 +49,18 @@ export default class FilmPresenter {
   #handleFavoriteClick = () => {
     this.#changeData(
       UpdateType.MINOR,
-      {...this.#film,
-        userDetails: {
-          favorite: !this.#film.userDetails.favorite,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          watchlist: this.#film.userDetails.watchlist,
-        },
-      }
-    );
+      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
   };
 
   #handleWatchedClick = () => {
     this.#changeData(
       UpdateType.MINOR,
-      {...this.#film,
-        userDetails: {
-          favorite: this.#film.userDetails.favorite,
-          alreadyWatched: !this.#film.userDetails.alreadyWatched,
-          watchlist: this.#film.userDetails.watchlist,
-        },
-      }
-    );
+      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
   };
 
   #handleWatchlistClick = () => {
     this.#changeData(
       UpdateType.MINOR,
-      {...this.#film,
-        userDetails: {
-          favorite: this.#film.userDetails.favorite,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          watchlist: !this.#film.userDetails.watchlist,
-        },
-      },
-    );
+      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
   };
 }
