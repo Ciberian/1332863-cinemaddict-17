@@ -98,9 +98,9 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     document.addEventListener('keydown', this.#addCommentKeydownHandler);
   };
 
-  setDeleteClickHandler = (callback) => {
+  setDeleteClickHandler = async (callback) => {
     this._callback.deleteCommentClick = callback;
-    this.element.querySelectorAll('.film-details__comment-delete').addEventListener('click', this.#deleteCommentClickHandler);
+    await this.element.querySelectorAll('.film-details__comment-delete').addEventListener('click', this.#deleteCommentClickHandler);
   };
 
   #setInnerHandlers = () => {

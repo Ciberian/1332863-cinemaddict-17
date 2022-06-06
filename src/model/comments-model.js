@@ -1,11 +1,25 @@
 import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable {
+  #filmsApiService = null;
   #comments = [];
+
+  constructor(filmsApiService) {
+    super();
+    this.#filmsApiService = filmsApiService;
+  }
 
   get comments () {
     return this.#comments;
   }
+
+  init = async (film) => {
+    try {
+      this.#comments = await this.#filmsApiService.getComments(film);
+    } catch(err) {
+      this.#comments = [];
+    }
+  };
 
   addComment = (updateType, update) => {
     this.#comments = [

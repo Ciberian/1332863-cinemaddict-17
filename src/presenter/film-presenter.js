@@ -5,15 +5,13 @@ import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
-  #comments = null;
   #filmsModel = null;
   #changeData = null;
   #filmCardComponent = null;
   #currentFilmsContainer = null;
   #filmPopupPresenter = new FilmPopupPresenter();
 
-  constructor(comments, changeData, container, filmsModel) {
-    this.#comments = comments;
+  constructor(changeData, container, filmsModel) {
     this.#filmsModel = filmsModel;
     this.#changeData = changeData;
     this.#currentFilmsContainer = container;
@@ -25,7 +23,7 @@ export default class FilmPresenter {
     const prevFilmComponent = this.#filmCardComponent;
 
     this.#filmCardComponent = new FilmCardView(this.#film);
-    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#comments, this.#changeData, this.#filmsModel));
+    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#changeData, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);

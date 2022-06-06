@@ -32,22 +32,18 @@ export default class FilmBoardPresenter {
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmsContainer = null;
-  #commentsModel = null;
   #filterModel = null;
   #filmsModel = null;
-  #comments = [];
   #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
   #watchedFilms = null;
   #isLoading = true;
 
-  constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
+  constructor(filmsContainer, filterModel, filmsModel) {
     this.#filmsContainer = filmsContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
-    this.#commentsModel = commentsModel;
-    this.#comments = [...this.#commentsModel.comments];
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -61,9 +57,9 @@ export default class FilmBoardPresenter {
 
     switch (this.#currentSortType) {
       case SortType.RATE_DOWN:
-        return filteredFilms.sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
+        return filteredFilms.slice().sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating);
       case SortType.DATE_DOWN:
-        return filteredFilms.sort(sortFilmsDateDown);
+        return filteredFilms.slice().sort(sortFilmsDateDown);
       default:
         return filteredFilms;
     }
@@ -96,7 +92,7 @@ export default class FilmBoardPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#comments, this.#handleViewAction, container, this.#filmsModel);
+    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel);
     filmPresenter.init(film);
     this.#filmPresenters.set(film.id, filmPresenter);
   };
@@ -139,8 +135,8 @@ export default class FilmBoardPresenter {
 
   #renderExtraFilmLists = () => {
     if (this.films.length) {
-      this.#topRatedFilmsPresenter = new TopRatedFilmsPresenter(this.#filmsModel, this.#commentsModel, this.#filmsSectionComponent.element);
-      this.#mostCommentedFilmsPresenter = new MostCommentedFilmsPresenter(this.#filmsModel, this.#commentsModel, this.#filmsSectionComponent.element);
+      this.#topRatedFilmsPresenter = new TopRatedFilmsPresenter(this.#filmsModel, this.#filmsSectionComponent.element);
+      this.#mostCommentedFilmsPresenter = new MostCommentedFilmsPresenter(this.#filmsModel, this.#filmsSectionComponent.element);
 
       this.#topRatedFilmsPresenter.init();
       this.#mostCommentedFilmsPresenter.init();

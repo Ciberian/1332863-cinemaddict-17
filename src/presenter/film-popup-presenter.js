@@ -6,7 +6,7 @@ import { render, remove, RenderPosition } from '../framework/render.js';
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
 
-  init(film, comments, changeData, filmsModel) {
+  init(film, changeData, filmsModel) {
     if (document.body.querySelector('.film-details')) {
       document.body.querySelector('.film-details').remove();
     }
@@ -21,7 +21,7 @@ export default class FilmPopupPresenter {
 
     render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
     filmPopupButtonsPresenter.init(film);
-    filmPopupCommentsPresenter.init(film, comments, this.#filmPopupComponent.element);
+    filmPopupCommentsPresenter.init(film, this.#filmPopupComponent.element);
     document.body.classList.add('hide-overflow');
   }
 

@@ -11,17 +11,13 @@ export default class MostCommentedFilmsPresenter {
   #mostCommentedContainerComponent = new FilmsContainerView();
 
   #films = [];
-  #comments = [];
   #filmsModel = null;
-  #commentsModel = null;
   #boardContainer = null;
   #mostCommentedFilmPresenters = new Map();
 
-  constructor(filmsModel, commentsModel, boardContainer) {
+  constructor(filmsModel, boardContainer) {
     this.#filmsModel = filmsModel;
     this.#films = [...this.#filmsModel.films];
-    this.#commentsModel = commentsModel;
-    this.#comments = [...this.#commentsModel.comments];
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
@@ -32,7 +28,7 @@ export default class MostCommentedFilmsPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#comments, this.#handleViewAction, container, this.#filmsModel);
+    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel);
     filmPresenter.init(film);
     this.#mostCommentedFilmPresenters.set(film.id, filmPresenter);
   };
