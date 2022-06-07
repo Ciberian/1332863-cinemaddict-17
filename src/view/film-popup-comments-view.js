@@ -48,7 +48,6 @@ const createFilmPopupCommentsTemplate = (state) => {
 };
 
 export default class FilmPopupCommentsView extends AbstractStatefulView {
-  #commentData = null;
   #film = null;
 
   constructor(comments, film) {
@@ -64,10 +63,44 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteCommentHandler(this._callback.deleteComment);
   };
 
-  #emojiAddHandler = (evt, imgSrc) => {
-    evt.preventDefault();
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    document.addEventListener('keydown', this.#formSubmitHandler);
+  };
+
+  setDeleteCommentHandler = (callback) => {
+    this._callback.deleteComment = callback;
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelectorAll('.film-details__emoji-list img')
+      .forEach((img) => img.addEventListener('click', () => this.#emojiAddHandler(img.src)));
+    this.element.querySelector('.film-details__comment-input')
+      .addEventListener('input', this.#commentInputHandler);
+  };
+
+  #resetForm = () => {
+    this._state.typedComment = null;
+    this._state.selectedEmotion = null;
+    this.element.querySelector('.film-details__comment-input').value = '';
+    this.updateElement({selectedEmotion: null});
+  };
+
+  static convertCommentsToState = (comments) => ({
+    commentsData: comments,
+    typedComment: null,
+    selectedEmotion: null,
+  });
+
+  static convertStateToComments = ({selectedEmotion, typedComment}) => (
+    {'emotion': selectedEmotion, 'comment': typedComment});
+
+  #emojiAddHandler = (imgSrc) => {
     let imgName = imgSrc.split('/');
     imgName = imgName[imgName.length-1].replace(/\.([A-Za-z]{3,4})/, '');
 
@@ -78,33 +111,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     }
   };
 
-  setFormSubmitHandler = (callback) => {
-    this._callback.formSubmit = callback;
-    document.addEventListener('keydown', this.#formSubmitHandler);
-  };
-
-  setDeleteClickHandler = (callback) => {
-    this._callback.deleteClick = callback;
-    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
-  };
-
-  #setInnerHandlers = () => {
-    this.element.querySelectorAll('.film-details__emoji-list img')
-      .forEach((img) => img.addEventListener('click', (evt) => this.#emojiAddHandler(evt, img.src)));
-    this.element.querySelector('.film-details__comment-input')
-      .addEventListener('input', this.#commentInputHandler);
-  };
-
-  static convertCommentsToState = (comments) => ({
-    commentsData: comments,
-    typedComment: null,
-    selectedEmotion: null,
-  });
-
-  static convertStateToComments = ({selectedEmotion, typedComment}) => {
-    this.#commentData = {emotion: selectedEmotion, comment: typedComment};
-  };
-
   #commentInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
@@ -113,12 +119,15 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   };
 
   #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(evt, this.#commentData, this.#film);
+    if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
+      evt.preventDefault();
+      this._callback.formSubmit(evt, FilmPopupCommentsView.convertStateToComments(this._state), this.#film);
+      this.#resetForm();
+    }
   };
 
   #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(evt, evt.target.closest('.film-details__comment'));
+    this._callback.deleteComment(evt, evt.target.closest('.film-details__comment'));
   };
 }

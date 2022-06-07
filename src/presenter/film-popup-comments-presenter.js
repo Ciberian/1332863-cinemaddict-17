@@ -23,29 +23,30 @@ export default class FilmPopupCommentsPresenter {
       then((commentsComponent) => {
         render(commentsComponent, container);
         commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
-        commentsComponent.setDeleteClickHandler(this.#handleDeleteClick);
+        commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
       });
+  };
+
+  #handleFormSubmit = (evt, comment, film) => {
+    evt.preventDefault();
+    console.log(evt, comment, film);
+
+    this.#handleViewAction(
+      UserAction.ADD_COMMENT,
+      UpdateType.MINOR,
+      comment,
+      film
+    );
   };
 
   #handleDeleteClick = (evt, comment) => {
     evt.preventDefault();
+
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
       comment,
     );
-  };
-
-  #handleFormSubmit = (evt, comment, film) => {
-    evt.preventDefault();
-    if ((evt.code === 10 || evt.code === 13) && (evt.ctrlKey || evt.metaKey)) {
-      this.#handleViewAction(
-        UserAction.ADD_COMMENT,
-        UpdateType.MINOR,
-        comment,
-        film
-      );
-    }
   };
 
   #handleViewAction = async (actionType, updateType, update, film) => {
