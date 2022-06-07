@@ -1,45 +1,83 @@
 import FilmPopupCommentsView from '../view/film-popup-comments-view.js';
 import FilmsApiService from '../films-api-service.js';
 import CommentsModel from '../model/comments-model.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { render } from '../framework/render.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const AUTHORIZATION = 'Basic aV9dsF09wcl9lj8h';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict/';
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class FilmPopupCommentsPresenter {
-  #newComment = null;
-  #oldComment = null;
-  #commentsComponent = null;
   #commentsModel = new CommentsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
-  constructor(newComment, oldComment) {
-    this.#newComment = newComment;
-    this.#oldComment = oldComment;
-  }
-
-  init = async (film, container) => {
-    await this.#commentsModel.init(film);
-    const selectedComments = this.#commentsModel.comments;
-    this.#commentsComponent = new FilmPopupCommentsView(selectedComments);
-    render(this.#commentsComponent, container);
-
-    this.#commentsComponent.setDeleteClickHandler(this.#handleDeleteCommentViewAction);
-    this.#commentsComponent.setDocumentKeydownHandler(this.#handleAddCommentViewAction);
+  init = (film, container) => {
+    this.#commentsModel.init(film).
+      then(() => this.#commentsModel.comments).
+      then((comments) => new FilmPopupCommentsView(comments, film)).
+      then((commentsComponent) => {
+        render(commentsComponent, container);
+        commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
+        commentsComponent.setDeleteClickHandler(this.#handleDeleteClick);
+      });
   };
 
-  #handleDeleteCommentViewAction = () => {
-    this.#commentsModel.deleteComment(this.#oldComment);
+  #handleDeleteClick = (evt, comment) => {
+    evt.preventDefault();
+    this.#handleViewAction(
+      UserAction.DELETE_COMMENT,
+      UpdateType.MINOR,
+      comment,
+    );
   };
 
-  #handleAddCommentViewAction = () => {
-    document.body.addEventListener('keydown', (evt) => {
-      if (evt.ctrlKey && evt.code === 'Enter') {
-        this.#commentsModel.addComment(this.#newComment);
-      }
-    });
+  #handleFormSubmit = (evt, comment, film) => {
+    evt.preventDefault();
+    if ((evt.code === 10 || evt.code === 13) && (evt.ctrlKey || evt.metaKey)) {
+      this.#handleViewAction(
+        UserAction.ADD_COMMENT,
+        UpdateType.MINOR,
+        comment,
+        film
+      );
+    }
   };
 
-  #handleCommentsModelEvent = () => {
-    this.init();
+  #handleViewAction = async (actionType, updateType, update, film) => {
+    this.#uiBlocker.block();
+
+    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        try {
+          await this.#commentsModel.addComment(updateType, update, film);
+        } catch(err) {
+          this.#shakeForm();
+        }
+        break;
+      case UserAction.DELETE_COMMENT:
+        try {
+          await this.#commentsModel.deleteComment(updateType, update);
+        } catch(err) {
+          this.#unlockForm();
+        }
+        break;
+    }
+
+    this.#uiBlocker.unblock();
   };
+
+  #shakeForm = () => {
+  };
+
+  #unlockForm = () => {
+  };
+
+  // #handleCommentsModelEvent = () => {
+  //   this.init();
+  // };
 }

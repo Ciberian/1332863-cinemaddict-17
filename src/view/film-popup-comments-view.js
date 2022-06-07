@@ -49,9 +49,11 @@ const createFilmPopupCommentsTemplate = (state) => {
 
 export default class FilmPopupCommentsView extends AbstractStatefulView {
   #commentData = null;
+  #film = null;
 
-  constructor(comments) {
+  constructor(comments, film) {
     super();
+    this.#film = film;
     this._state = FilmPopupCommentsView.convertCommentsToState(comments);
     this.#setInnerHandlers();
   }
@@ -76,38 +78,19 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     }
   };
 
-  #commentInputHandler = (evt) => {
-    evt.preventDefault();
-    this._setState({
-      typedComment: evt.target.value,
-    });
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    document.addEventListener('keydown', this.#formSubmitHandler);
   };
 
-  #commentDeleteHandler = (evt) => {
-    evt.preventDefault();
-    const commentId = evt.target.closest('.film-details__comment').dataset.id;
-    const updatedComments = this._state.commentsData.filter((comment) => comment.id !== Number(commentId));
-
-    const scrollPosition = this.element.scrollTop;
-    this.updateElement({commentsData: updatedComments});
-    this.element.scrollTop = scrollPosition;
-  };
-
-  setDocumentKeydownHandler = (callback) => {
-    this._callback.addCommentClick = callback;
-    document.addEventListener('keydown', this.#addCommentKeydownHandler);
-  };
-
-  setDeleteClickHandler = async (callback) => {
-    this._callback.deleteCommentClick = callback;
-    await this.element.querySelectorAll('.film-details__comment-delete').addEventListener('click', this.#deleteCommentClickHandler);
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
   };
 
   #setInnerHandlers = () => {
     this.element.querySelectorAll('.film-details__emoji-list img')
       .forEach((img) => img.addEventListener('click', (evt) => this.#emojiAddHandler(evt, img.src)));
-    this.element.querySelectorAll('.film-details__comment-delete')
-      .forEach((commentDeleteBtn) => commentDeleteBtn.addEventListener('click', this.#commentDeleteHandler));
     this.element.querySelector('.film-details__comment-input')
       .addEventListener('input', this.#commentInputHandler);
   };
@@ -122,13 +105,20 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this.#commentData = {emotion: selectedEmotion, comment: typedComment};
   };
 
-  #addCommentKeydownHandler = (evt) => {
+  #commentInputHandler = (evt) => {
     evt.preventDefault();
-    this._callback.addCommentClick(evt);
+    this._setState({
+      typedComment: evt.target.value,
+    });
   };
 
-  #deleteCommentClickHandler = (evt) => {
+  #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteCommentClick();
+    this._callback.formSubmit(evt, this.#commentData, this.#film);
+  };
+
+  #commentDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(evt, evt.target.closest('.film-details__comment'));
   };
 }
