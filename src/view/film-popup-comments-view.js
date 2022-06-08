@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeFilmDate } from '../utils/films.js';
+import he from 'he';
 
 const createFilmPopupCommentsTemplate = (state) => {
   const { selectedEmotion, typedComment, commentsData } = state;
@@ -113,7 +114,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #commentInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      typedComment: evt.target.value,
+      typedComment: he.encode(evt.target.value),
     });
   };
 
