@@ -23,9 +23,11 @@ export default class CommentsModel extends Observable {
 
   addComment = async (updateType, update, film) => {
     try {
-      const newComment = await this.#filmsApiService.addComment(update, film);
-      this.#comments = [newComment, ...this.#comments];
-      this._notify(updateType, newComment);
+      const response = await this.#filmsApiService.addComment(update, film);
+      const newComment = response.comments[response.comments.length - 1];
+      this.#comments = [...this.#comments, newComment];
+      this._notify(updateType, this.#comments);
+
     } catch(err) {
       throw new Error('Can\'t add comment');
     }
@@ -44,8 +46,8 @@ export default class CommentsModel extends Observable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1),
       ];
+      this._notify(updateType, this.#comments);
 
-      this._notify(updateType, update);
     } catch(err) {
       throw new Error('Can\'t delete comment');
     }

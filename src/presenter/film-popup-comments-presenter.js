@@ -1,30 +1,33 @@
 import FilmPopupCommentsView from '../view/film-popup-comments-view.js';
-import FilmsApiService from '../films-api-service.js';
-import CommentsModel from '../model/comments-model.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import { render } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
-const AUTHORIZATION = 'Basic aV9dsF09wcl9lj8h';
-const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict/';
 const TimeLimit = {
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000,
 };
 
 export default class FilmPopupCommentsPresenter {
-  #commentsModel = new CommentsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+  #film = null;
+  #container = null;
+  #commentsModel = null;
+  #commentsComponent = null;
 
-  init = (film, container) => {
-    this.#commentsModel.init(film).
-      then(() => this.#commentsModel.comments).
-      then((comments) => new FilmPopupCommentsView(comments, film)).
-      then((commentsComponent) => {
-        render(commentsComponent, container);
-        commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
-        commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
-      });
+  constructor(film, container, commentsModel) {
+    this.#film = film;
+    this.#container = container;
+    this.#commentsModel = commentsModel;
+
+    this.#commentsModel.addObserver(this.#handleCommentsModelEvent);
+  }
+
+  init = (comments) => {
+    this.#commentsComponent = new FilmPopupCommentsView(comments, this.#film);
+    render(this.#commentsComponent, this.#container);
+    this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
   };
 
   #handleFormSubmit = (evt, comment, film) => {
@@ -77,7 +80,8 @@ export default class FilmPopupCommentsPresenter {
   #unlockForm = () => {
   };
 
-  // #handleCommentsModelEvent = () => {
-  //   this.init();
-  // };
+  #handleCommentsModelEvent = (updateType, update) => {
+    remove(this.#commentsComponent);
+    this.init(update);
+  };
 }

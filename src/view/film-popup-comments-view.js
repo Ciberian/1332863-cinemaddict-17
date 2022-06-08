@@ -78,8 +78,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   };
 
   #setInnerHandlers = () => {
-    this.element.querySelectorAll('.film-details__emoji-list img')
-      .forEach((img) => img.addEventListener('click', () => this.#emojiAddHandler(img.src)));
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
     this.element.querySelector('.film-details__comment-input')
       .addEventListener('input', this.#commentInputHandler);
   };
@@ -99,14 +98,15 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   static convertStateToComments = ({selectedEmotion, typedComment}) => (
     {'emotion': selectedEmotion, 'comment': typedComment});
 
-  #emojiAddHandler = (imgSrc) => {
-    let imgName = imgSrc.split('/');
-    imgName = imgName[imgName.length-1].replace(/\.([A-Za-z]{3,4})/, '');
+  #emojiAddHandler = (evt) => {
+    if (evt.target.nodeName === 'INPUT') {
+      const imgName = evt.target.value;
 
-    if (imgName !== this._state.selectedEmotion) {
-      const scrollPosition = this.element.scrollTop;
-      this.updateElement({selectedEmotion: imgName});
-      this.element.scrollTop = scrollPosition;
+      if (imgName !== this._state.selectedEmotion) {
+        const scrollPosition = this.element.scrollTop;
+        this.updateElement({selectedEmotion: imgName});
+        this.element.scrollTop = scrollPosition;
+      }
     }
   };
 
