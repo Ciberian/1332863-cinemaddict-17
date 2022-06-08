@@ -39,9 +39,9 @@ export default class FilmsApiService extends ApiService {
     return parsedResponse;
   };
 
-  deleteTask = async (comment) => {
+  deleteComment = async (comment) => {
     const response = await this._load({
-      url: `comments/${comment.id}`,
+      url: `comments/${comment.dataset.id}`,
       method: Method.DELETE,
     });
 

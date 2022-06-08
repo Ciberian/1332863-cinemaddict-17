@@ -87,7 +87,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #resetForm = () => {
     this._state.typedComment = null;
     this._state.selectedEmotion = null;
-    this.element.querySelector('.film-details__comment-input').value = '';
     this.updateElement({selectedEmotion: null});
   };
 

@@ -32,7 +32,7 @@ export default class CommentsModel extends Observable {
   };
 
   deleteComment = async (updateType, update) => {
-    const index = this.#comments.findIndex((comment) => comment.id === update.id);
+    const index = this.#comments.findIndex((comment) => comment.id === update.dataset.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');

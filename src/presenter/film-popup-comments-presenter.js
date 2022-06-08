@@ -29,7 +29,6 @@ export default class FilmPopupCommentsPresenter {
 
   #handleFormSubmit = (evt, comment, film) => {
     evt.preventDefault();
-    console.log(evt, comment, film);
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
