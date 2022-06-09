@@ -10,31 +10,29 @@ const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict/';
 
 export default class FilmPopupPresenter {
   #commentsModel = new CommentsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
+  #filmPopupCommentsPresenter = null;
   #filmPopupComponent = null;
   #comments = null;
 
-  init(film, changeData, filmsModel) {
-    this.#commentsModel.init(film).
-      then(() => {
-        this.#comments = this.#commentsModel.comments;
-      }).
-      then(() => new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel)).
-      then((filmPopupCommentsPresenter) => filmPopupCommentsPresenter.init(this.#comments));
-
+  async init(film, changeData, filmsModel) {
     if (document.body.querySelector('.film-details')) {
       document.body.querySelector('.film-details').remove();
     }
-    const siteFooterElement = document.querySelector('.footer');
 
+    const siteFooterElement = document.querySelector('.footer');
     this.#filmPopupComponent = new FilmPopupView(film);
     this.#filmPopupComponent.setClickHandler(this.#onCloseBtnClick);
     document.addEventListener('keydown', this.#onDocumentKeyDown);
+    document.body.classList.add('hide-overflow');
 
     const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element);
-
     render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
     filmPopupButtonsPresenter.init(film);
-    document.body.classList.add('hide-overflow');
+
+    await this.#commentsModel.init(film);
+    this.#comments = this.#commentsModel.comments;
+    this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel);
+    this.#filmPopupCommentsPresenter.init(this.#comments);
   }
 
   #removeFilmPopup = () => {
