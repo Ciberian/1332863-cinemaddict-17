@@ -116,8 +116,8 @@ export default class FilmPopupView extends AbstractView {
   };
 
   #documentKeydownHandler = (evt) => {
-    evt.preventDefault();
     if (evt.code === 'Escape') {
+      evt.preventDefault();
       this._callback.keydown();
       document.removeEventListener('keydown', this.#documentKeydownHandler);
     }
