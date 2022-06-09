@@ -62,10 +62,28 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     return createFilmPopupCommentsTemplate(this._state);
   }
 
+  static convertCommentsToState = (comments) => ({
+    commentsData: comments,
+    typedComment: null,
+    selectedEmotion: null,
+  });
+
+  static convertStateToComments = ({selectedEmotion, typedComment}) => (
+    {'emotion': selectedEmotion, 'comment': typedComment});
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteCommentHandler(this._callback.deleteComment);
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
+  };
+
+  removeAllHandlers = () => {
+    document.removeEventListener('keydown', this.#formSubmitHandler);
   };
 
   setFormSubmitHandler = (callback) => {
@@ -77,27 +95,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this._callback.deleteComment = callback;
     this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
   };
-
-  #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
-    this.element.querySelector('.film-details__comment-input')
-      .addEventListener('input', this.#commentInputHandler);
-  };
-
-  #resetForm = () => {
-    this._state.typedComment = null;
-    this._state.selectedEmotion = null;
-    this.updateElement({selectedEmotion: null});
-  };
-
-  static convertCommentsToState = (comments) => ({
-    commentsData: comments,
-    typedComment: null,
-    selectedEmotion: null,
-  });
-
-  static convertStateToComments = ({selectedEmotion, typedComment}) => (
-    {'emotion': selectedEmotion, 'comment': typedComment});
 
   #emojiAddHandler = (evt) => {
     if (evt.target.nodeName === 'INPUT') {
@@ -112,7 +109,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   };
 
   #commentInputHandler = (evt) => {
-    evt.preventDefault();
     this._setState({
       typedComment: he.encode(evt.target.value),
     });
@@ -122,7 +118,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
       this._callback.formSubmit(evt, FilmPopupCommentsView.convertStateToComments(this._state), this.#film);
-      this.#resetForm();
+      this.removeAllHandlers();
     }
   };
 

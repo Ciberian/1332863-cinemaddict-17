@@ -26,8 +26,13 @@ export default class FilmPopupCommentsPresenter {
   init = (comments) => {
     this.#commentsComponent = new FilmPopupCommentsView(comments, this.#film);
     render(this.#commentsComponent, this.#container);
+
     this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
+  };
+
+  removeAllHandlers = () => {
+    this.#commentsComponent.removeAllHandlers();
   };
 
   #handleFormSubmit = (evt, comment, film) => {
@@ -66,7 +71,7 @@ export default class FilmPopupCommentsPresenter {
         try {
           await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#unlockForm();
+          this.#shakeForm();
         }
         break;
     }
@@ -75,9 +80,6 @@ export default class FilmPopupCommentsPresenter {
   };
 
   #shakeForm = () => {
-  };
-
-  #unlockForm = () => {
   };
 
   #handleCommentsModelEvent = (updateType, update) => {

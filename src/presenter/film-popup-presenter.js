@@ -21,8 +21,8 @@ export default class FilmPopupPresenter {
 
     const siteFooterElement = document.querySelector('.footer');
     this.#filmPopupComponent = new FilmPopupView(film);
-    this.#filmPopupComponent.setClickHandler(this.#onCloseBtnClick);
-    document.addEventListener('keydown', this.#onDocumentKeyDown);
+    this.#filmPopupComponent.setClickHandler(this.#removeFilmPopup);
+    this.#filmPopupComponent.setKeydownHandler(this.#removeFilmPopup);
     document.body.classList.add('hide-overflow');
 
     const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element);
@@ -38,17 +38,6 @@ export default class FilmPopupPresenter {
   #removeFilmPopup = () => {
     remove(this.#filmPopupComponent);
     document.body.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this.#onDocumentKeyDown);
-  };
-
-  #onCloseBtnClick = () => {
-    this.#removeFilmPopup();
-  };
-
-  #onDocumentKeyDown = (evt) => {
-    if (evt.code === 'Escape') {
-      evt.preventDefault();
-      this.#removeFilmPopup();
-    }
+    this.#filmPopupCommentsPresenter.removeAllHandlers();
   };
 }
