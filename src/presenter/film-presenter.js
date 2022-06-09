@@ -1,21 +1,20 @@
 import FilmCardView from '../view/film-card-view.js';
-import FilmPopupView from '../view/film-popup-view.js';
-import { render, remove, replace, RenderPosition } from '../framework/render.js';
+import FilmPopupPresenter from './film-popup-presenter.js';
+import { UpdateType } from '../const.js';
+import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
-  #comments = null;
+  #filmsModel = null;
   #changeData = null;
-  #closeAnyOpenPopup = null;
   #filmCardComponent = null;
-  #filmPopupComponent = null;
   #currentFilmsContainer = null;
+  #filmPopupPresenter = new FilmPopupPresenter();
 
-  constructor(comments, changeData, closeAnyOpenPopup, container) {
-    this.#comments = comments;
+  constructor(changeData, container, filmsModel) {
+    this.#filmsModel = filmsModel;
     this.#changeData = changeData;
     this.#currentFilmsContainer = container;
-    this.#closeAnyOpenPopup = closeAnyOpenPopup;
   }
 
   init = (film) => {
@@ -24,7 +23,7 @@ export default class FilmPresenter {
     const prevFilmComponent = this.#filmCardComponent;
 
     this.#filmCardComponent = new FilmCardView(this.#film);
-    this.#filmCardComponent.setClickHandler(() => this.#addFilmPopup(this.#film, this.#comments));
+    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#changeData, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -36,10 +35,6 @@ export default class FilmPresenter {
 
     if (this.#currentFilmsContainer.contains(prevFilmComponent.element)) {
       replace(this.#filmCardComponent, prevFilmComponent);
-
-      if (document.querySelector('.film-details')) {
-        this.#addFilmPopup(this.#film, this.#comments);
-      }
     }
 
     remove(prevFilmComponent);
@@ -49,73 +44,21 @@ export default class FilmPresenter {
     remove(this.#filmCardComponent);
   };
 
-  #addFilmPopup = (film, commentsList) => {
-    this.#closeAnyOpenPopup();
-
-    const siteFooterElement = document.querySelector('.footer');
-    const selectedComments = commentsList.filter(({ id }) => film.comments.some((commentId) => commentId === Number(id)));
-    this.#filmPopupComponent = new FilmPopupView(film, selectedComments);
-
-    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
-    document.body.classList.add('hide-overflow');
-
-    document.addEventListener('keydown', this.#onDocumentKeyDown);
-    this.#filmPopupComponent.setClickHandler(this.#onCloseBtnClick);
-    this.#filmPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#filmPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
-    this.#filmPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-  };
-
-  removeFilmPopup = () => {
-    document.body.classList.remove('hide-overflow');
-    remove(this.#filmPopupComponent);
-    document.removeEventListener('keydown', this.#onDocumentKeyDown);
-  };
-
-  #onCloseBtnClick = () => {
-    this.removeFilmPopup();
-  };
-
-  #onDocumentKeyDown = (evt) => {
-    if (evt.code === 'Escape') {
-      evt.preventDefault();
-      this.removeFilmPopup();
-    }
-  };
-
   #handleFavoriteClick = () => {
     this.#changeData(
-      {...this.#film,
-        userDetails: {
-          favorite: !this.#film.userDetails.favorite,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          watchlist: this.#film.userDetails.watchlist,
-        },
-      }
-    );
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
   };
 
   #handleWatchedClick = () => {
     this.#changeData(
-      {...this.#film,
-        userDetails: {
-          favorite: this.#film.userDetails.favorite,
-          alreadyWatched: !this.#film.userDetails.alreadyWatched,
-          watchlist: this.#film.userDetails.watchlist,
-        },
-      }
-    );
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
   };
 
   #handleWatchlistClick = () => {
     this.#changeData(
-      {...this.#film,
-        userDetails: {
-          favorite: this.#film.userDetails.favorite,
-          alreadyWatched: this.#film.userDetails.alreadyWatched,
-          watchlist: !this.#film.userDetails.watchlist,
-        },
-      },
-    );
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
   };
 }
