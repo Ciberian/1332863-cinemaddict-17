@@ -26,8 +26,13 @@ export default class FilmPopupCommentsPresenter {
   init = (comments) => {
     this.#commentsComponent = new FilmPopupCommentsView(comments, this.#film);
     render(this.#commentsComponent, this.#container);
+
     this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
+  };
+
+  removeAllHandlers = () => {
+    this.#commentsComponent.removeAllHandlers();
   };
 
   #handleFormSubmit = (evt, comment, film) => {
@@ -35,19 +40,20 @@ export default class FilmPopupCommentsPresenter {
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       comment,
       film
     );
   };
 
-  #handleDeleteClick = (evt, comment) => {
+  #handleDeleteClick = (evt, comment, film) => {
     evt.preventDefault();
 
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       comment,
+      film
     );
   };
 
@@ -64,9 +70,9 @@ export default class FilmPopupCommentsPresenter {
         break;
       case UserAction.DELETE_COMMENT:
         try {
-          await this.#commentsModel.deleteComment(updateType, update);
+          await this.#commentsModel.deleteComment(updateType, update, film);
         } catch(err) {
-          this.#unlockForm();
+          this.#shakeForm();
         }
         break;
     }
@@ -77,11 +83,9 @@ export default class FilmPopupCommentsPresenter {
   #shakeForm = () => {
   };
 
-  #unlockForm = () => {
-  };
-
   #handleCommentsModelEvent = (updateType, update) => {
+    const newComments = update.comments;
     remove(this.#commentsComponent);
-    this.init(update);
+    this.init(newComments);
   };
 }

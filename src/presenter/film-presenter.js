@@ -5,15 +5,17 @@ import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
-  #filmsModel = null;
   #changeData = null;
+  #filmsModel = null;
+  #commentsModel = null;
   #filmCardComponent = null;
   #currentFilmsContainer = null;
-  #filmPopupPresenter = new FilmPopupPresenter();
+  #filmPopupPresenter = null;
 
-  constructor(changeData, container, filmsModel) {
-    this.#filmsModel = filmsModel;
+  constructor(changeData, container, filmsModel, commentsModel) {
     this.#changeData = changeData;
+    this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
     this.#currentFilmsContainer = container;
   }
 
@@ -23,6 +25,7 @@ export default class FilmPresenter {
     const prevFilmComponent = this.#filmCardComponent;
 
     this.#filmCardComponent = new FilmCardView(this.#film);
+    this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel);
     this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#changeData, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);

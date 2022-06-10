@@ -26,14 +26,14 @@ export default class CommentsModel extends Observable {
       const response = await this.#filmsApiService.addComment(update, film);
       const newComment = response.comments[response.comments.length - 1];
       this.#comments = [...this.#comments, newComment];
-      this._notify(updateType, this.#comments);
+      this._notify(updateType, this.#adaptToClient(response));
 
     } catch(err) {
       throw new Error('Can\'t add comment');
     }
   };
 
-  deleteComment = async (updateType, update) => {
+  deleteComment = async (updateType, update, film) => {
     const index = this.#comments.findIndex((comment) => comment.id === update.dataset.id);
 
     if (index === -1) {
@@ -46,10 +46,42 @@ export default class CommentsModel extends Observable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1),
       ];
-      this._notify(updateType, this.#comments);
+
+      film.comments = this.#comments;
+      this._notify(updateType, film);
 
     } catch(err) {
       throw new Error('Can\'t delete comment');
     }
+  };
+
+  #adaptToClient = (film) => {
+    const adaptedFilm = {...film,
+      movie: {...film.movie,
+        filmInfo: {...film.movie['film_info'],
+          ageRating: film.movie['film_info']['age_rating'],
+          alternativeTitle: film.movie['film_info']['alternative_title'],
+          totalRating: film.movie['film_info']['total_rating'],
+          release: {
+            date: film.movie['film_info']['release']['date'],
+            releaseCountry: film.movie['film_info']['release']['release_country']
+          }
+        },
+        userDetails: {
+          favorite: film.movie['user_details']['favorite'],
+          alreadyWatched: film.movie['user_details']['already_watched'],
+          watchingDate: film.movie['user_details']['watching_date'],
+          watchlist: film.movie['user_details']['watchlist'],
+        }
+      }
+    };
+
+    delete adaptedFilm.movie['film_info'];
+    delete adaptedFilm.movie['user_details'];
+    delete adaptedFilm.movie.filmInfo['age_rating'];
+    delete adaptedFilm.movie.filmInfo['alternative_title'];
+    delete adaptedFilm.movie.filmInfo['total_rating'];
+
+    return adaptedFilm;
   };
 }
