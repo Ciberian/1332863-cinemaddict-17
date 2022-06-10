@@ -7,6 +7,8 @@ import { render, remove, RenderPosition } from '../framework/render.js';
 
 const AUTHORIZATION = 'Basic aV9dsF09wcl9lj8h';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict/';
+let prevPopupComponent = null;
+let prevCommentPresenter = null;
 
 export default class FilmPopupPresenter {
   #commentsModel = new CommentsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
@@ -15,23 +17,26 @@ export default class FilmPopupPresenter {
   #comments = null;
 
   async init(film, changeData, filmsModel) {
-    if (document.body.querySelector('.film-details')) {
-      document.body.querySelector('.film-details').remove();
+    if (prevPopupComponent) {
+      prevPopupComponent.removeAllHandlers();
+      prevCommentPresenter.removeAllHandlers();
+      remove(prevPopupComponent);
     }
 
-    const siteFooterElement = document.querySelector('.footer');
     this.#filmPopupComponent = new FilmPopupView(film);
+    prevPopupComponent = this.#filmPopupComponent;
     this.#filmPopupComponent.setClickHandler(this.#removeFilmPopup);
     this.#filmPopupComponent.setKeydownHandler(this.#removeFilmPopup);
     document.body.classList.add('hide-overflow');
 
     const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element);
-    render(this.#filmPopupComponent, siteFooterElement, RenderPosition.AFTEREND);
+    render(this.#filmPopupComponent, document.querySelector('.footer'), RenderPosition.AFTEREND);
     filmPopupButtonsPresenter.init(film);
 
     await this.#commentsModel.init(film);
     this.#comments = this.#commentsModel.comments;
     this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel);
+    prevCommentPresenter = this.#filmPopupCommentsPresenter;
     this.#filmPopupCommentsPresenter.init(this.#comments);
   }
 
