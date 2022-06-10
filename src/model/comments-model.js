@@ -33,7 +33,7 @@ export default class CommentsModel extends Observable {
     }
   };
 
-  deleteComment = async (updateType, update) => {
+  deleteComment = async (updateType, update, film) => {
     const index = this.#comments.findIndex((comment) => comment.id === update.dataset.id);
 
     if (index === -1) {
@@ -46,7 +46,9 @@ export default class CommentsModel extends Observable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1),
       ];
-      this._notify(updateType, this.#comments);
+
+      film.comments = this.#comments;
+      this._notify(updateType, film);
 
     } catch(err) {
       throw new Error('Can\'t delete comment');
