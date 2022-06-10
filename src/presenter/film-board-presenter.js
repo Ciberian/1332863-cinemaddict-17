@@ -34,19 +34,22 @@ export default class FilmBoardPresenter {
   #filmsContainer = null;
   #filterModel = null;
   #filmsModel = null;
+  #commentsModel = null;
   #filmPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
   #watchedFilms = null;
   #isLoading = true;
 
-  constructor(filmsContainer, filterModel, filmsModel) {
+  constructor(filmsContainer, filterModel, filmsModel, commentsModel) {
     this.#filmsContainer = filmsContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
 
-    this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
@@ -92,7 +95,7 @@ export default class FilmBoardPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel);
+    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#filmPresenters.set(film.id, filmPresenter);
   };
@@ -135,8 +138,8 @@ export default class FilmBoardPresenter {
 
   #renderExtraFilmLists = () => {
     if (this.films.length) {
-      this.#topRatedFilmsPresenter = new TopRatedFilmsPresenter(this.#filmsModel, this.#filmsSectionComponent.element);
-      this.#mostCommentedFilmsPresenter = new MostCommentedFilmsPresenter(this.#filmsModel, this.#filmsSectionComponent.element);
+      this.#topRatedFilmsPresenter = new TopRatedFilmsPresenter(this.#filmsModel, this.#commentsModel, this.#filmsSectionComponent.element);
+      this.#mostCommentedFilmsPresenter = new MostCommentedFilmsPresenter(this.#filmsModel, this.#commentsModel, this.#filmsSectionComponent.element);
 
       this.#topRatedFilmsPresenter.init();
       this.#mostCommentedFilmsPresenter.init();

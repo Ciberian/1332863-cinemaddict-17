@@ -40,7 +40,7 @@ export default class FilmPopupCommentsPresenter {
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       comment,
       film
     );
@@ -51,7 +51,7 @@ export default class FilmPopupCommentsPresenter {
 
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       comment,
     );
   };

@@ -12,11 +12,13 @@ export default class TopRatedFilmsPresenter {
 
   #films = [];
   #filmsModel = null;
+  #commentsModel = null;
   #boardContainer = null;
   #topRatedFilmPresenters = new Map();
 
-  constructor(filmsModel, boardContainer) {
+  constructor(filmsModel, commentsModel, boardContainer) {
     this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
     this.#films = [...this.#filmsModel.films];
     this.#boardContainer = boardContainer;
 
@@ -28,7 +30,7 @@ export default class TopRatedFilmsPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel);
+    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#topRatedFilmPresenters.set(film.id, filmPresenter);
   };

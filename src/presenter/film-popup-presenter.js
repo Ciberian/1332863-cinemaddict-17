@@ -1,20 +1,20 @@
 import FilmPopupView from '../view/film-popup-view.js';
 import FilmPopupButtonsPresenter from './film-popup-buttons-presenter.js';
 import FilmPopupCommentsPresenter from './film-popup-comments-presenter.js';
-import FilmsApiService from '../films-api-service.js';
-import CommentsModel from '../model/comments-model.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 
-const AUTHORIZATION = 'Basic aV9dsF09wcl9lj8h';
-const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict/';
 let prevPopupComponent = null;
 let prevCommentPresenter = null;
 
 export default class FilmPopupPresenter {
-  #commentsModel = new CommentsModel(new FilmsApiService(END_POINT, AUTHORIZATION));
   #filmPopupCommentsPresenter = null;
   #filmPopupComponent = null;
+  #commentsModel = null;
   #comments = null;
+
+  constructor(commentsModel) {
+    this.#commentsModel = commentsModel;
+  }
 
   async init(film, changeData, filmsModel) {
     if (prevPopupComponent) {
