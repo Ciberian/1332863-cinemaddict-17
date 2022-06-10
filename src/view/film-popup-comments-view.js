@@ -15,7 +15,7 @@ const createFilmPopupCommentsTemplate = (state) => {
           <p class="film-details__comment-text">${comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${humanizeFilmDate(commentDate, 'YYYY/MMMM/DD HH:MM')}</span>
+            <span class="film-details__comment-day">${humanizeFilmDate(commentDate, 'YYYY/MM/DD HH:MM')}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -117,6 +117,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
+      this.element.querySelector('textarea').disabled = true;
       this._callback.formSubmit(evt, FilmPopupCommentsView.convertStateToComments(this._state), this.#film);
       this.removeAllHandlers();
     }
@@ -124,6 +125,8 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
   #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
+    evt.target.disabled = true;
+    evt.target.textContent = 'Deleting...';
     this._callback.deleteComment(evt, evt.target.closest('.film-details__comment'), this.#film);
     this.removeAllHandlers();
   };

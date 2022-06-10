@@ -58,15 +58,15 @@ export default class FilmPopupCommentsPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update, film) => {
-    this.#uiBlocker.block();
-
     switch (actionType) {
       case UserAction.ADD_COMMENT:
+        this.#uiBlocker.block();
         try {
           await this.#commentsModel.addComment(updateType, update, film);
         } catch(err) {
           this.#shakeForm();
         }
+        this.#uiBlocker.unblock();
         break;
       case UserAction.DELETE_COMMENT:
         try {
@@ -76,8 +76,6 @@ export default class FilmPopupCommentsPresenter {
         }
         break;
     }
-
-    this.#uiBlocker.unblock();
   };
 
   #shakeForm = () => {
