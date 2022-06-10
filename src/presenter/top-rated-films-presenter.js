@@ -23,6 +23,7 @@ export default class TopRatedFilmsPresenter {
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
+    this.#commentsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
   }
 
   init = () => {
@@ -61,6 +62,11 @@ export default class TopRatedFilmsPresenter {
   #handleTopRatedFilmsModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        if ('movie' in updatedFilm && this.#topRatedFilmPresenters.get(updatedFilm.movie.id)) {
+          this.#topRatedFilmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
+          break;
+        }
+
         if (this.#topRatedFilmPresenters.get(updatedFilm.id)) {
           this.#topRatedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
         }
