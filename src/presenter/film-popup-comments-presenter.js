@@ -83,7 +83,8 @@ export default class FilmPopupCommentsPresenter {
   };
 
   #handleCommentsModelEvent = (updateType, update) => {
+    const newComments = update.comments;
     remove(this.#commentsComponent);
-    this.init(update);
+    this.init(newComments);
   };
 }

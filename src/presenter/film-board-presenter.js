@@ -180,6 +180,11 @@ export default class FilmBoardPresenter {
   #handleModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        if ('movie' in updatedFilm && this.#filmPresenters.get(updatedFilm.movie.id)) {
+          this.#filmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
+          break;
+        }
+
         if (this.#filmPresenters.get(updatedFilm.id)) {
           this.#filmPresenters.get(updatedFilm.id).init(updatedFilm);
         }
