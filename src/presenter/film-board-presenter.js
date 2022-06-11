@@ -95,7 +95,7 @@ export default class FilmBoardPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
+    const filmPresenter = new FilmPresenter(container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#filmPresenters.set(film.id, filmPresenter);
   };
@@ -171,10 +171,6 @@ export default class FilmBoardPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-  };
-
-  #handleViewAction = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
   };
 
   #handleModelEvent = (updateType, updatedFilm) => {

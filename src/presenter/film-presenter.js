@@ -5,15 +5,13 @@ import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPresenter {
   #film = null;
-  #changeData = null;
   #filmsModel = null;
   #commentsModel = null;
   #filmCardComponent = null;
   #currentFilmsContainer = null;
   #filmPopupPresenter = null;
 
-  constructor(changeData, container, filmsModel, commentsModel) {
-    this.#changeData = changeData;
+  constructor(container, filmsModel, commentsModel) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#currentFilmsContainer = container;
@@ -26,7 +24,7 @@ export default class FilmPresenter {
 
     this.#filmCardComponent = new FilmCardView(this.#film);
     this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel);
-    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#changeData, this.#filmsModel));
+    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -47,21 +45,35 @@ export default class FilmPresenter {
     remove(this.#filmCardComponent);
   };
 
-  #handleFavoriteClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+  #handleFavoriteClick = async (evt) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR, {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 
-  #handleWatchedClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+  #handleWatchedClick = async (evt) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 
-  #handleWatchlistClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+  #handleWatchlistClick = async (evt) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 }

@@ -31,7 +31,7 @@ export default class MostCommentedFilmsPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
+    const filmPresenter = new FilmPresenter(container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#mostCommentedFilmPresenters.set(film.id, filmPresenter);
   };
@@ -53,10 +53,6 @@ export default class MostCommentedFilmsPresenter {
 
     remove(this.#mostCommentedContainerComponent);
     remove(this.#mostCommentedFilmsComponent);
-  };
-
-  #handleViewAction = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
   };
 
   #handleMostCommentedFilmsModelEvent = (updateType, updatedFilm) => {

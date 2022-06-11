@@ -16,8 +16,10 @@ export default class FilmPopupPresenter {
     this.#commentsModel = commentsModel;
   }
 
-  async init(film, changeData, filmsModel) {
-    if (prevPopupComponent) {
+  async init(film, filmsModel) {
+    if (prevPopupComponent?.film.id === film.id) {
+      return;
+    } else if (prevPopupComponent) {
       prevPopupComponent.removeAllHandlers();
       prevCommentPresenter.removeAllHandlers();
       remove(prevPopupComponent);
@@ -25,12 +27,12 @@ export default class FilmPopupPresenter {
 
     this.#filmPopupComponent = new FilmPopupView(film);
     prevPopupComponent = this.#filmPopupComponent;
+    render(this.#filmPopupComponent, document.querySelector('.footer'), RenderPosition.AFTEREND);
     this.#filmPopupComponent.setClickHandler(this.#removeFilmPopup);
     this.#filmPopupComponent.setKeydownHandler(this.#removeFilmPopup);
     document.body.classList.add('hide-overflow');
 
-    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(changeData, filmsModel, this.#filmPopupComponent.element);
-    render(this.#filmPopupComponent, document.querySelector('.footer'), RenderPosition.AFTEREND);
+    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(filmsModel, this.#filmPopupComponent.element);
     filmPopupButtonsPresenter.init(film);
 
     await this.#commentsModel.init(film);

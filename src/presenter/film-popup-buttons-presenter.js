@@ -3,15 +3,13 @@ import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
 
 export default class FilmPopupButtonsPresenter {
-  #changeData = null;
   #filmsModel = null;
   #buttonsContainer = null;
   #buttonsComponent = null;
   #prevFilm = null;
 
 
-  constructor(changeData, filmsModel, buttonsContainer) {
-    this.#changeData = changeData;
+  constructor(filmsModel, buttonsContainer) {
     this.#filmsModel = filmsModel;
     this.#buttonsContainer = buttonsContainer;
 
@@ -66,9 +64,7 @@ export default class FilmPopupButtonsPresenter {
 
   #handleFavoriteClick = async (evt, film) => {
     try {
-      await this.#changeData(
-        UpdateType.MINOR,
-        {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+      await this.#filmsModel.updateFilm(UpdateType.MINOR, {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
     } catch(err) {
       evt.target.disabled = false;
       // анимация встряски кнопки
@@ -76,15 +72,25 @@ export default class FilmPopupButtonsPresenter {
     }
   };
 
-  #handleWatchedClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
+  #handleWatchedClick = async (evt, film) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 
-  #handleWatchlistClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
+  #handleWatchlistClick = async (evt, film) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 }
