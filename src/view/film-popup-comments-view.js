@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeFilmDate } from '../utils/films.js';
+import { humanizeCommentDate } from '../utils/films.js';
 import he from 'he';
 
 const createFilmPopupCommentsTemplate = (state) => {
@@ -15,7 +15,7 @@ const createFilmPopupCommentsTemplate = (state) => {
           <p class="film-details__comment-text">${comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${humanizeFilmDate(commentDate, 'YYYY/MM/DD HH:MM')}</span>
+            <span class="film-details__comment-day">${humanizeCommentDate(commentDate)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>

@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime.js';
+dayjs.extend(relativeTime);
 
 const humanizeFilmDate = (releaseDate, formatType) => dayjs(releaseDate).format(formatType);
+
+const humanizeCommentDate = (releaseDate) => dayjs(releaseDate).fromNow();
 
 const getFilmDuration = (runtime) => {
   const durationInHour = Math.floor(runtime / 60);
@@ -31,4 +35,4 @@ const sortFilmsDateDown = (filmA, filmB) => {
   return weight ?? dayjs(filmB.filmInfo.release.date).diff(dayjs(filmA.filmInfo.release.date));
 };
 
-export { humanizeFilmDate, getFilmDuration, sortFilmsDateDown };
+export { humanizeFilmDate, humanizeCommentDate, getFilmDuration, sortFilmsDateDown };
