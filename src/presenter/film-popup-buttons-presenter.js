@@ -2,6 +2,9 @@ import FilmPopupButtonsView from '../view/film-popup-buttons-view.js';
 import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
 
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export default class FilmPopupButtonsPresenter {
   #filmsModel = null;
   #buttonsContainer = null;
@@ -62,35 +65,42 @@ export default class FilmPopupButtonsPresenter {
     }
   };
 
-  #handleFavoriteClick = async (evt, film) => {
+  #handleFavoriteClick = async (evtTarget, film) => {
     try {
-      await this.#filmsModel.updateFilm(UpdateType.MINOR, {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
     } catch(err) {
-      evt.target.disabled = false;
-      // анимация встряски кнопки
-      throw new Error('Can\'t update film');
+      evtTarget.classList.add(SHAKE_CLASS_NAME);
+      setTimeout(() => {
+        evtTarget.disabled = false;
+        evtTarget.classList.remove(SHAKE_CLASS_NAME);
+      }, SHAKE_ANIMATION_TIMEOUT);
     }
   };
 
-  #handleWatchedClick = async (evt, film) => {
+  #handleWatchedClick = async (evtTarget, film) => {
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
     } catch(err) {
-      evt.target.disabled = false;
-      // анимация встряски кнопки
-      throw new Error('Can\'t update film');
+      evtTarget.classList.add(SHAKE_CLASS_NAME);
+      setTimeout(() => {
+        evtTarget.disabled = false;
+        evtTarget.classList.remove(SHAKE_CLASS_NAME);
+      }, SHAKE_ANIMATION_TIMEOUT);
     }
   };
 
-  #handleWatchlistClick = async (evt, film) => {
+  #handleWatchlistClick = async (evtTarget, film) => {
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
     } catch(err) {
-      evt.target.disabled = false;
-      // анимация встряски кнопки
-      throw new Error('Can\'t update film');
+      evtTarget.classList.add(SHAKE_CLASS_NAME);
+      setTimeout(() => {
+        evtTarget.disabled = false;
+        evtTarget.classList.remove(SHAKE_CLASS_NAME);
+      }, SHAKE_ANIMATION_TIMEOUT);
     }
   };
 }

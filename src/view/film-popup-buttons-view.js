@@ -45,18 +45,18 @@ export default class FilmPopupButtonsView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     evt.target.disabled = true;
-    this._callback.favoriteClick(evt, this.#film);
+    this._callback.favoriteClick(evt.target, this.#film);
   };
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
     evt.target.disabled = true;
-    this._callback.watchedClick(evt, this.#film);
+    this._callback.watchedClick(evt.target, this.#film);
   };
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
     evt.target.disabled = true;
-    this._callback.watchlistClick(evt, this.#film);
+    this._callback.watchlistClick(evt.target, this.#film);
   };
 }
