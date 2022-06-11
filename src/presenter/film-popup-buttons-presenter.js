@@ -24,9 +24,9 @@ export default class FilmPopupButtonsPresenter {
 
     this.#buttonsComponent = new FilmPopupButtonsView(film);
 
-    this.#buttonsComponent.setFavoriteClickHandler(() => this.#handleFavoriteClick(film));
-    this.#buttonsComponent.setWatchedClickHandler(() => this.#handleWatchedClick(film));
-    this.#buttonsComponent.setWatchlistClickHandler(() => this.#handleWatchlistClick(film));
+    this.#buttonsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#buttonsComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#buttonsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
     if (prevButtonsComponent === null) {
       render(this.#buttonsComponent, this.#buttonsContainer);
@@ -64,10 +64,16 @@ export default class FilmPopupButtonsPresenter {
     }
   };
 
-  #handleFavoriteClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+  #handleFavoriteClick = async (evt, film) => {
+    try {
+      await this.#changeData(
+        UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+    } catch(err) {
+      evt.target.disabled = false;
+      // анимация встряски кнопки
+      throw new Error('Can\'t update film');
+    }
   };
 
   #handleWatchedClick = (film) => {
