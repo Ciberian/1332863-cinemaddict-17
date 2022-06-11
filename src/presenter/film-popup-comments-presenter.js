@@ -8,8 +8,9 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+
 export default class FilmPopupCommentsPresenter {
-  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
   #film = null;
   #container = null;
   #commentsModel = null;
@@ -35,50 +36,52 @@ export default class FilmPopupCommentsPresenter {
     this.#commentsComponent.removeAllHandlers();
   };
 
-  #handleFormSubmit = (evt, comment, film) => {
+  #handleFormSubmit = (evt, update) => {
     evt.preventDefault();
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      comment,
-      film
+      update
     );
   };
 
-  #handleDeleteClick = (evt, comment, film) => {
+  #handleDeleteClick = (evt, update) => {
     evt.preventDefault();
 
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      comment,
-      film
+      update
     );
   };
 
-  #handleViewAction = async (actionType, updateType, update, film) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.ADD_COMMENT:
-        this.#uiBlocker.block();
+        uiBlocker.block();
         try {
-          await this.#commentsModel.addComment(updateType, update, film);
+          await this.#commentsModel.addComment(updateType, update);
+          this.removeAllHandlers();
         } catch(err) {
-          this.#shakeForm();
+          this.#commentsComponent.shake();
+          update.textarea.disabled = false;
+          uiBlocker.unblock();
         }
-        this.#uiBlocker.unblock();
+        uiBlocker.unblock();
         break;
       case UserAction.DELETE_COMMENT:
         try {
-          await this.#commentsModel.deleteComment(updateType, update, film);
+          await this.#commentsModel.deleteComment(updateType, update);
+          this.removeAllHandlers();
         } catch(err) {
-          this.#shakeForm();
+          this.#commentsComponent.shake(() => {
+            update.deleteButton.disabled = false;
+            update.deleteButton.textContent = 'Delete';
+          });
         }
         break;
     }
-  };
-
-  #shakeForm = () => {
   };
 
   #handleCommentsModelEvent = (updateType, update) => {

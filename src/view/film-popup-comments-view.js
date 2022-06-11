@@ -50,11 +50,13 @@ const createFilmPopupCommentsTemplate = (state) => {
 
 export default class FilmPopupCommentsView extends AbstractStatefulView {
   #film = null;
+  #comments = null;
 
   constructor(comments, film) {
     super();
     this.#film = film;
-    this._state = FilmPopupCommentsView.convertCommentsToState(comments);
+    this.#comments = comments;
+    this._state = FilmPopupCommentsView.convertCommentsToState(this.#comments);
     this.#setInnerHandlers();
   }
 
@@ -117,17 +119,31 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
-      this.element.querySelector('textarea').disabled = true;
-      this._callback.formSubmit(evt, FilmPopupCommentsView.convertStateToComments(this._state), this.#film);
-      this.removeAllHandlers();
+      const textarea = this.element.querySelector('textarea');
+      textarea.disabled = true;
+
+      const update = {
+        textarea: textarea,
+        newComment: FilmPopupCommentsView.convertStateToComments(this._state),
+        film: this.#film
+      };
+
+      this._callback.formSubmit(evt,  update);
     }
   };
 
   #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    evt.target.disabled = true;
-    evt.target.textContent = 'Deleting...';
-    this._callback.deleteComment(evt, evt.target.closest('.film-details__comment'), this.#film);
-    this.removeAllHandlers();
+    const deleteButton = evt.target;
+    deleteButton.disabled = true;
+    deleteButton.textContent = 'Deleting...';
+
+    const update = {
+      deleteButton: deleteButton,
+      deleteComment: evt.target.closest('.film-details__comment'),
+      film: this.#film
+    };
+
+    this._callback.deleteComment(evt, update);
   };
 }

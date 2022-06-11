@@ -46,5 +46,6 @@ export default class FilmPopupPresenter {
     remove(this.#filmPopupComponent);
     document.body.classList.remove('hide-overflow');
     this.#filmPopupCommentsPresenter.removeAllHandlers();
+    prevPopupComponent = null;
   };
 }
