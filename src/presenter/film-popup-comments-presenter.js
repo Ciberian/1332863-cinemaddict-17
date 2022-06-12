@@ -62,10 +62,10 @@ export default class FilmPopupCommentsPresenter {
         uiBlocker.block();
         try {
           await this.#commentsModel.addComment(updateType, update);
-          this.removeAllHandlers();
         } catch(err) {
           this.#commentsComponent.shake();
           update.textarea.disabled = false;
+          this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
           uiBlocker.unblock();
         }
         uiBlocker.unblock();
@@ -73,11 +73,11 @@ export default class FilmPopupCommentsPresenter {
       case UserAction.DELETE_COMMENT:
         try {
           await this.#commentsModel.deleteComment(updateType, update);
-          this.removeAllHandlers();
         } catch(err) {
           this.#commentsComponent.shake(() => {
             update.deleteButton.disabled = false;
             update.deleteButton.textContent = 'Delete';
+            this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
           });
         }
         break;

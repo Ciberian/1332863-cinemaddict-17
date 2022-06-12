@@ -129,6 +129,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
       };
 
       this._callback.formSubmit(evt,  update);
+      this.removeAllHandlers();
     }
   };
 
@@ -145,5 +146,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     };
 
     this._callback.deleteComment(evt, update);
+    this.removeAllHandlers();
   };
 }
