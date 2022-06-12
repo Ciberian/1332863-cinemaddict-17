@@ -30,7 +30,7 @@ const createFilmPopupCommentsTemplate = (state) => {
     </label>`), '');
 
   return `
-    <div class="film-details__bottom-container">
+    <div class="film-details__bottom-container" tabindex = "0">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsData.length}</span></h3>
 
@@ -80,16 +80,16 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
+    this.element.addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    this.element.closest('form').addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setDeleteCommentHandler = (callback) => {
     this._callback.deleteComment = callback;
-    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
   };
 
   #emojiAddHandler = (evt) => {
