@@ -28,7 +28,7 @@ export default class FilmPopupCommentsPresenter {
 
   init = (comments) => {
     this.#commentsComponent = new FilmPopupCommentsView(comments, this.#film);
-    render(this.#commentsComponent, this.#container);
+    render(this.#commentsComponent, this.#container.querySelector('.film-details__inner'));
 
     this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);

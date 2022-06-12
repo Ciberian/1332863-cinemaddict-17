@@ -75,8 +75,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setDeleteCommentHandler(this._callback.deleteComment);
   };
 
   #setInnerHandlers = () => {

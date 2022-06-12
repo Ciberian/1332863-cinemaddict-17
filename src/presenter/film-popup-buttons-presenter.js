@@ -7,14 +7,14 @@ const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class FilmPopupButtonsPresenter {
   #filmsModel = null;
-  #buttonsContainer = null;
+  #container = null;
   #buttonsComponent = null;
   #prevFilm = null;
 
 
-  constructor(filmsModel, buttonsContainer) {
+  constructor(filmsModel, container) {
     this.#filmsModel = filmsModel;
-    this.#buttonsContainer = buttonsContainer;
+    this.#container = container;
 
     this.#filmsModel.addObserver(this.#handlePopupButtonsModelEvent);
   }
@@ -30,11 +30,11 @@ export default class FilmPopupButtonsPresenter {
     this.#buttonsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
     if (prevButtonsComponent === null) {
-      render(this.#buttonsComponent, this.#buttonsContainer);
+      render(this.#buttonsComponent, this.#container.querySelector('.film-details__top-container'));
       return;
     }
 
-    if (this.#buttonsContainer.contains(prevButtonsComponent.element)) {
+    if (this.#container.contains(prevButtonsComponent.element)) {
       replace(this.#buttonsComponent, prevButtonsComponent);
     }
 
