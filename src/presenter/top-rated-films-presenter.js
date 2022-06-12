@@ -10,7 +10,6 @@ export default class TopRatedFilmsPresenter {
   #topRatedContainerComponent = new FilmsContainerView();
   #topRatedFilmsComponent = new TopRatedFilmsView();
 
-  #films = [];
   #filmsModel = null;
   #commentsModel = null;
   #boardContainer = null;
@@ -19,11 +18,13 @@ export default class TopRatedFilmsPresenter {
   constructor(filmsModel, commentsModel, boardContainer) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#films = [...this.#filmsModel.films];
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
-    this.#commentsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
+  }
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init = () => {
@@ -40,7 +41,7 @@ export default class TopRatedFilmsPresenter {
     render(this.#topRatedFilmsComponent, this.#boardContainer);
     render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
 
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating)
       .slice(0, TOP_RATED_FILMS_DISPLAYED)

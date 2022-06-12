@@ -10,7 +10,6 @@ export default class MostCommentedFilmsPresenter {
   #mostCommentedFilmsComponent = new MostCommentedFilmsView();
   #mostCommentedContainerComponent = new FilmsContainerView();
 
-  #films = [];
   #filmsModel = null;
   #commentsModel = null;
   #boardContainer = null;
@@ -19,11 +18,13 @@ export default class MostCommentedFilmsPresenter {
   constructor(filmsModel, commentsModel, boardContainer) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#films = [...this.#filmsModel.films];
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
-    this.#commentsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
+  }
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init = () => {
@@ -39,8 +40,7 @@ export default class MostCommentedFilmsPresenter {
   #renderMostCommentedFilms = () => {
     render(this.#mostCommentedFilmsComponent, this.#boardContainer);
     render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
-
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)

@@ -125,7 +125,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
       const update = {
         textarea: textarea,
         newComment: FilmPopupCommentsView.convertStateToComments(this._state),
-        film: this.#film
+        movie: this.#film
       };
 
       this._callback.formSubmit(evt,  update);
@@ -142,7 +142,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     const update = {
       deleteButton: deleteButton,
       deleteComment: evt.target.closest('.film-details__comment'),
-      film: this.#film
+      movie: this.#film
     };
 
     this._callback.deleteComment(evt, update);

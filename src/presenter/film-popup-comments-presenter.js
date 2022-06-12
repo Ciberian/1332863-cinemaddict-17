@@ -13,12 +13,14 @@ const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 export default class FilmPopupCommentsPresenter {
   #film = null;
   #container = null;
+  #filmModel = null;
   #commentsModel = null;
   #commentsComponent = null;
 
-  constructor(film, container, commentsModel) {
+  constructor(film, container, filmModel, commentsModel) {
     this.#film = film;
     this.#container = container;
+    this.#filmModel = filmModel;
     this.#commentsModel = commentsModel;
 
     this.#commentsModel.addObserver(this.#handleCommentsModelEvent);
@@ -41,7 +43,7 @@ export default class FilmPopupCommentsPresenter {
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.MAJOR,
       update
     );
   };
@@ -51,7 +53,7 @@ export default class FilmPopupCommentsPresenter {
 
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.MAJOR,
       update
     );
   };
@@ -84,9 +86,10 @@ export default class FilmPopupCommentsPresenter {
     }
   };
 
-  #handleCommentsModelEvent = (updateType, update) => {
+  #handleCommentsModelEvent = async (updateType, update) => {
     const newComments = update.comments;
     remove(this.#commentsComponent);
     this.init(newComments);
+    await this.#filmModel.updateFilm(updateType, update.movie);
   };
 }

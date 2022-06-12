@@ -49,7 +49,6 @@ export default class FilmBoardPresenter {
 
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
