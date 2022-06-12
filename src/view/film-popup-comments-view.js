@@ -82,13 +82,9 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   };
 
-  removeAllHandlers = () => {
-    document.removeEventListener('keydown', this.#formSubmitHandler);
-  };
-
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    document.addEventListener('keydown', this.#formSubmitHandler);
+    this.element.closest('form').addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setDeleteCommentHandler = (callback) => {
@@ -127,7 +123,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
       };
 
       this._callback.formSubmit(evt,  update);
-      this.removeAllHandlers();
+      this.element.closest('form').removeEventListener('keydown', this.#formSubmitHandler);
     }
   };
 
@@ -144,6 +140,5 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     };
 
     this._callback.deleteComment(evt, update);
-    this.removeAllHandlers();
   };
 }

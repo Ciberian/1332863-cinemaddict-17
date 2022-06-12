@@ -4,7 +4,6 @@ import FilmPopupCommentsPresenter from './film-popup-comments-presenter.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 
 let prevPopupComponent = null;
-let prevCommentPresenter = null;
 
 export default class FilmPopupPresenter {
   #filmPopupCommentsPresenter = null;
@@ -21,7 +20,6 @@ export default class FilmPopupPresenter {
       return;
     } else if (prevPopupComponent) {
       prevPopupComponent.removeAllHandlers();
-      prevCommentPresenter.removeAllHandlers();
       remove(prevPopupComponent);
     }
 
@@ -38,14 +36,12 @@ export default class FilmPopupPresenter {
     await this.#commentsModel.init(film);
     this.#comments = this.#commentsModel.comments;
     this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, filmsModel, this.#commentsModel);
-    prevCommentPresenter = this.#filmPopupCommentsPresenter;
     this.#filmPopupCommentsPresenter.init(this.#comments);
   }
 
   #removeFilmPopup = () => {
     remove(this.#filmPopupComponent);
     document.body.classList.remove('hide-overflow');
-    this.#filmPopupCommentsPresenter.removeAllHandlers();
     prevPopupComponent = null;
   };
 }

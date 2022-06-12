@@ -34,10 +34,6 @@ export default class FilmPopupCommentsPresenter {
     this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
   };
 
-  removeAllHandlers = () => {
-    this.#commentsComponent.removeAllHandlers();
-  };
-
   #handleFormSubmit = (evt, update) => {
     evt.preventDefault();
 
@@ -67,7 +63,6 @@ export default class FilmPopupCommentsPresenter {
         } catch(err) {
           this.#commentsComponent.shake();
           update.textarea.disabled = false;
-          this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
           uiBlocker.unblock();
         }
         uiBlocker.unblock();
@@ -79,7 +74,6 @@ export default class FilmPopupCommentsPresenter {
           this.#commentsComponent.shake(() => {
             update.deleteButton.disabled = false;
             update.deleteButton.textContent = 'Delete';
-            this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
           });
         }
         break;
