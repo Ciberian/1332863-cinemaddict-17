@@ -53,11 +53,6 @@ export default class FilmBoardPresenter {
     this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
-  #updateLocalData = (updateType, update) => {
-    const updatedFilm = this.#filmsModel.films.find((film) => film.id === update.movie.id);
-    updatedFilm.comments = update.movie.comments;
-  };
-
   get films() {
     this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
@@ -77,6 +72,11 @@ export default class FilmBoardPresenter {
   init = () => {
     this.#renderMainFilmList();
     this.#renderExtraFilmLists();
+  };
+
+  #updateLocalData = (updateType, update) => {
+    const updatedFilm = this.#filmsModel.films.find((film) => film.id === update.movie.id);
+    updatedFilm.comments = update.movie.comments;
   };
 
   #renderSort = () => {

@@ -24,7 +24,6 @@ export default class MostCommentedFilmsPresenter {
     this.#commentsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
   }
 
-
   get films() {
     return this.#filmsModel.films;
   }

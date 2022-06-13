@@ -30,7 +30,7 @@ const createFilmPopupCommentsTemplate = (state) => {
     </label>`), '');
 
   return `
-    <div class="film-details__bottom-container" tabindex = "0">
+    <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsData.length}</span></h3>
 
@@ -111,7 +111,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   };
 
   #formSubmitHandler = (evt) => {
-    if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
+    if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
       const textarea = this.element.querySelector('textarea');
       textarea.disabled = true;

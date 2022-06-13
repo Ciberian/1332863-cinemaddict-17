@@ -58,7 +58,8 @@ export default class FilmPresenter {
 
   #handleFavoriteClick = async (evtTarget) => {
     try {
-      await this.#filmsModel.updateFilm(UpdateType.MINOR, {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
     } catch(err) {
       this.#shakeButton(evtTarget);
     }
