@@ -23,6 +23,7 @@ export default class MostCommentedFilmsPresenter {
     this.#filmsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
   }
 
+
   get films() {
     return this.#filmsModel.films;
   }
@@ -38,13 +39,21 @@ export default class MostCommentedFilmsPresenter {
   };
 
   #renderMostCommentedFilms = () => {
+    if (this.films.every((film) => film.comments.length === 0)) {
+      return;
+    }
+
     render(this.#mostCommentedFilmsComponent, this.#boardContainer);
     render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
     this.films
       .slice()
       .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)
-      .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
+      .forEach((mostCommentedFilm) => {
+        if (mostCommentedFilm.comments.length !== 0) {
+          this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element);
+        }
+      });
   };
 
   clearMostCommentedFilmList = () => {

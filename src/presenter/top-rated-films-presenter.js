@@ -38,6 +38,10 @@ export default class TopRatedFilmsPresenter {
   };
 
   #renderTopRatedFilmList = () => {
+    if (this.films.every((film) => film.filmInfo.totalRating === 0.0)) {
+      return;
+    }
+
     render(this.#topRatedFilmsComponent, this.#boardContainer);
     render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
 
@@ -45,7 +49,11 @@ export default class TopRatedFilmsPresenter {
       .slice()
       .sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating)
       .slice(0, TOP_RATED_FILMS_DISPLAYED)
-      .forEach((topRatedFilm) => this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
+      .forEach((topRatedFilm) => {
+        if (topRatedFilm.filmInfo.totalRating !== 0.0) {
+          this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element);
+        }
+      });
   };
 
   clearTopRatedFilmList = () => {
