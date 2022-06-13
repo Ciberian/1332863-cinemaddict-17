@@ -65,16 +65,20 @@ export default class FilmPopupButtonsPresenter {
     }
   };
 
+  #shakeButton = (button) => {
+    button.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      button.disabled = false;
+      button.classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
   #handleFavoriteClick = async (evtTarget, film) => {
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
     } catch(err) {
-      evtTarget.classList.add(SHAKE_CLASS_NAME);
-      setTimeout(() => {
-        evtTarget.disabled = false;
-        evtTarget.classList.remove(SHAKE_CLASS_NAME);
-      }, SHAKE_ANIMATION_TIMEOUT);
+      this.#shakeButton(evtTarget);
     }
   };
 
@@ -83,11 +87,7 @@ export default class FilmPopupButtonsPresenter {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
     } catch(err) {
-      evtTarget.classList.add(SHAKE_CLASS_NAME);
-      setTimeout(() => {
-        evtTarget.disabled = false;
-        evtTarget.classList.remove(SHAKE_CLASS_NAME);
-      }, SHAKE_ANIMATION_TIMEOUT);
+      this.#shakeButton(evtTarget);
     }
   };
 
@@ -96,11 +96,7 @@ export default class FilmPopupButtonsPresenter {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
     } catch(err) {
-      evtTarget.classList.add(SHAKE_CLASS_NAME);
-      setTimeout(() => {
-        evtTarget.disabled = false;
-        evtTarget.classList.remove(SHAKE_CLASS_NAME);
-      }, SHAKE_ANIMATION_TIMEOUT);
+      this.#shakeButton(evtTarget);
     }
   };
 }
