@@ -21,6 +21,7 @@ export default class MostCommentedFilmsPresenter {
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
+    this.#commentsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
   }
 
 

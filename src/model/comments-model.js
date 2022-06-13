@@ -48,7 +48,9 @@ export default class CommentsModel extends Observable {
         ...this.#comments.slice(index + 1),
       ];
 
+      const commentIds = this.#comments.map((comment) => comment.id);
       update.comments = this.#comments;
+      update.movie.comments = commentIds;
       this._notify(updateType, update);
 
     } catch(err) {

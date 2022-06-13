@@ -13,14 +13,12 @@ const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 export default class FilmPopupCommentsPresenter {
   #film = null;
   #container = null;
-  #filmModel = null;
   #commentsModel = null;
   #commentsComponent = null;
 
-  constructor(film, container, filmModel, commentsModel) {
+  constructor(film, container, commentsModel) {
     this.#film = film;
     this.#container = container;
-    this.#filmModel = filmModel;
     this.#commentsModel = commentsModel;
 
     this.#commentsModel.addObserver(this.#handleCommentsModelEvent);
@@ -59,9 +57,7 @@ export default class FilmPopupCommentsPresenter {
       case UserAction.ADD_COMMENT:
         uiBlocker.block();
         try {
-          update.movie.isCommentModelInit = true;
           await this.#commentsModel.addComment(updateType, update);
-          await this.#filmModel.updateFilm(updateType, update.movie);
         } catch(err) {
           this.#commentsComponent.shake();
           update.textarea.disabled = false;
@@ -71,9 +67,7 @@ export default class FilmPopupCommentsPresenter {
         break;
       case UserAction.DELETE_COMMENT:
         try {
-          update.movie.isCommentModelInit = true;
           await this.#commentsModel.deleteComment(updateType, update);
-          await this.#filmModel.updateFilm(updateType, update.movie);
         } catch(err) {
           this.#commentsComponent.shake(() => {
             update.deleteButton.disabled = false;
@@ -84,7 +78,7 @@ export default class FilmPopupCommentsPresenter {
     }
   };
 
-  #handleCommentsModelEvent = async (updateType, update) => {
+  #handleCommentsModelEvent = (updateType, update) => {
     const newComments = update.comments;
     remove(this.#commentsComponent);
     this.init(newComments);

@@ -21,6 +21,7 @@ export default class TopRatedFilmsPresenter {
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
+    this.#commentsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
   }
 
   get films() {

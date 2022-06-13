@@ -35,7 +35,7 @@ export default class FilmPopupPresenter {
 
     await this.#commentsModel.init(film);
     this.#comments = this.#commentsModel.comments;
-    this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, filmsModel, this.#commentsModel);
+    this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel);
     this.#filmPopupCommentsPresenter.init(this.#comments);
   }
 

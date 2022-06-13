@@ -49,7 +49,14 @@ export default class FilmBoardPresenter {
 
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#updateLocalData);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
+
+  #updateLocalData = (updateType, update) => {
+    const updatedFilm = this.#filmsModel.films.find((film) => film.id === update.movie.id);
+    updatedFilm.comments = update.movie.comments;
+  };
 
   get films() {
     this.#filterType = this.#filterModel.filter;
