@@ -2,18 +2,19 @@ import FilmPopupButtonsView from '../view/film-popup-buttons-view.js';
 import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
 
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export default class FilmPopupButtonsPresenter {
-  #changeData = null;
   #filmsModel = null;
-  #buttonsContainer = null;
+  #container = null;
   #buttonsComponent = null;
   #prevFilm = null;
 
 
-  constructor(changeData, filmsModel, buttonsContainer) {
-    this.#changeData = changeData;
+  constructor(filmsModel, container) {
     this.#filmsModel = filmsModel;
-    this.#buttonsContainer = buttonsContainer;
+    this.#container = container;
 
     this.#filmsModel.addObserver(this.#handlePopupButtonsModelEvent);
   }
@@ -24,16 +25,16 @@ export default class FilmPopupButtonsPresenter {
 
     this.#buttonsComponent = new FilmPopupButtonsView(film);
 
-    this.#buttonsComponent.setFavoriteClickHandler(() => this.#handleFavoriteClick(film));
-    this.#buttonsComponent.setWatchedClickHandler(() => this.#handleWatchedClick(film));
-    this.#buttonsComponent.setWatchlistClickHandler(() => this.#handleWatchlistClick(film));
+    this.#buttonsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#buttonsComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#buttonsComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
     if (prevButtonsComponent === null) {
-      render(this.#buttonsComponent, this.#buttonsContainer);
+      render(this.#buttonsComponent, this.#container.querySelector('.film-details__top-container'));
       return;
     }
 
-    if (this.#buttonsContainer.contains(prevButtonsComponent.element)) {
+    if (this.#container.contains(prevButtonsComponent.element)) {
       replace(this.#buttonsComponent, prevButtonsComponent);
     }
 
@@ -64,21 +65,38 @@ export default class FilmPopupButtonsPresenter {
     }
   };
 
-  #handleFavoriteClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+  #shakeButton = (button) => {
+    button.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      button.disabled = false;
+      button.classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
   };
 
-  #handleWatchedClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
+  #handleFavoriteClick = async (evtTarget, film) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
   };
 
-  #handleWatchlistClick = (film) => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
+  #handleWatchedClick = async (evtTarget, film) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
+  };
+
+  #handleWatchlistClick = async (evtTarget, film) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
   };
 }

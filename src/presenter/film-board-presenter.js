@@ -49,8 +49,14 @@ export default class FilmBoardPresenter {
 
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#updateLocalData);
     this.#commentsModel.addObserver(this.#handleModelEvent);
   }
+
+  #updateLocalData = (updateType, update) => {
+    const updatedFilm = this.#filmsModel.films.find((film) => film.id === update.movie.id);
+    updatedFilm.comments = update.movie.comments;
+  };
 
   get films() {
     this.#filterType = this.#filterModel.filter;
@@ -95,7 +101,7 @@ export default class FilmBoardPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
+    const filmPresenter = new FilmPresenter(container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#filmPresenters.set(film.id, filmPresenter);
   };
@@ -146,7 +152,10 @@ export default class FilmBoardPresenter {
     }
   };
 
-  #clearFilmBoard = ({ resetRenderedFilmCount = false, resetSortType = false } = {}) => {
+  #clearFilmBoard = ({
+    resetRenderedFilmCount = false,
+    resetSortType = false,
+    isCommentModelInit = false } = {}) => {
     const filmCount = this.films.length;
     remove(this.#sortComponent);
     remove(this.#showMoreBtnComponent);
@@ -162,29 +171,18 @@ export default class FilmBoardPresenter {
       remove(this.#noFilmsComponent);
     }
 
-    if (resetRenderedFilmCount) {
-      this.#renderedFilmCount = FILM_COUNT_PER_STEP;
-    } else {
-      this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
-    }
+    this.#renderedFilmCount = (resetRenderedFilmCount && !isCommentModelInit) ?
+      FILM_COUNT_PER_STEP :
+      Math.min(filmCount, this.#renderedFilmCount);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
   };
 
-  #handleViewAction = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
-  };
-
   #handleModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        if ('movie' in updatedFilm && this.#filmPresenters.get(updatedFilm.movie.id)) {
-          this.#filmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
-          break;
-        }
-
         if (this.#filmPresenters.get(updatedFilm.id)) {
           this.#filmPresenters.get(updatedFilm.id).init(updatedFilm);
         }
@@ -194,7 +192,11 @@ export default class FilmBoardPresenter {
         this.#renderMainFilmList();
         break;
       case UpdateType.MAJOR:
-        this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
+        this.#clearFilmBoard({
+          resetRenderedFilmCount: true,
+          resetSortType: true,
+          isCommentModelInit: updatedFilm?.isCommentModelInit,
+        });
         this.#renderMainFilmList();
         break;
       case UpdateType.INIT:

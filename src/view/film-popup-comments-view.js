@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeFilmDate } from '../utils/films.js';
+import { humanizeCommentDate } from '../utils/films.js';
 import he from 'he';
 
 const createFilmPopupCommentsTemplate = (state) => {
@@ -15,7 +15,7 @@ const createFilmPopupCommentsTemplate = (state) => {
           <p class="film-details__comment-text">${comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${humanizeFilmDate(commentDate, 'YYYY/MMMM/DD HH:MM')}</span>
+            <span class="film-details__comment-day">${humanizeCommentDate(commentDate)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -30,7 +30,7 @@ const createFilmPopupCommentsTemplate = (state) => {
     </label>`), '');
 
   return `
-    <div class="film-details__bottom-container">
+    <div class="film-details__bottom-container" tabindex = "0">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsData.length}</span></h3>
 
@@ -50,11 +50,13 @@ const createFilmPopupCommentsTemplate = (state) => {
 
 export default class FilmPopupCommentsView extends AbstractStatefulView {
   #film = null;
+  #comments = null;
 
   constructor(comments, film) {
     super();
     this.#film = film;
-    this._state = FilmPopupCommentsView.convertCommentsToState(comments);
+    this.#comments = comments;
+    this._state = FilmPopupCommentsView.convertCommentsToState(this.#comments);
     this.#setInnerHandlers();
   }
 
@@ -73,27 +75,21 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setDeleteCommentHandler(this._callback.deleteComment);
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
-  };
-
-  removeAllHandlers = () => {
-    document.removeEventListener('keydown', this.#formSubmitHandler);
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
+    this.element.addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    document.addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setDeleteCommentHandler = (callback) => {
     this._callback.deleteComment = callback;
-    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
   };
 
   #emojiAddHandler = (evt) => {
@@ -117,14 +113,32 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     if (evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
-      this._callback.formSubmit(evt, FilmPopupCommentsView.convertStateToComments(this._state), this.#film);
-      this.removeAllHandlers();
+      const textarea = this.element.querySelector('textarea');
+      textarea.disabled = true;
+
+      const update = {
+        textarea: textarea,
+        newComment: FilmPopupCommentsView.convertStateToComments(this._state),
+        movie: this.#film
+      };
+
+      this._callback.formSubmit(evt,  update);
+      this.element.closest('form').removeEventListener('keydown', this.#formSubmitHandler);
     }
   };
 
   #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteComment(evt, evt.target.closest('.film-details__comment'), this.#film);
-    this.removeAllHandlers();
+    const deleteButton = evt.target;
+    deleteButton.disabled = true;
+    deleteButton.textContent = 'Deleting...';
+
+    const update = {
+      deleteButton: deleteButton,
+      deleteComment: evt.target.closest('.film-details__comment'),
+      movie: this.#film
+    };
+
+    this._callback.deleteComment(evt, update);
   };
 }

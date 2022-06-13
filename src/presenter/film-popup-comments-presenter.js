@@ -8,8 +8,9 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+
 export default class FilmPopupCommentsPresenter {
-  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
   #film = null;
   #container = null;
   #commentsModel = null;
@@ -25,62 +26,56 @@ export default class FilmPopupCommentsPresenter {
 
   init = (comments) => {
     this.#commentsComponent = new FilmPopupCommentsView(comments, this.#film);
-    render(this.#commentsComponent, this.#container);
+    render(this.#commentsComponent, this.#container.querySelector('.film-details__inner'));
 
     this.#commentsComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#commentsComponent.setDeleteCommentHandler(this.#handleDeleteClick);
   };
 
-  removeAllHandlers = () => {
-    this.#commentsComponent.removeAllHandlers();
-  };
-
-  #handleFormSubmit = (evt, comment, film) => {
+  #handleFormSubmit = (evt, update) => {
     evt.preventDefault();
 
     this.#handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
-      comment,
-      film
+      UpdateType.MAJOR,
+      update
     );
   };
 
-  #handleDeleteClick = (evt, comment, film) => {
+  #handleDeleteClick = (evt, update) => {
     evt.preventDefault();
 
     this.#handleViewAction(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      comment,
-      film
+      UpdateType.MAJOR,
+      update
     );
   };
 
-  #handleViewAction = async (actionType, updateType, update, film) => {
-    this.#uiBlocker.block();
-
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.ADD_COMMENT:
+        uiBlocker.block();
         try {
-          await this.#commentsModel.addComment(updateType, update, film);
+          await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
-          this.#shakeForm();
+          this.#commentsComponent.shake();
+          update.textarea.disabled = false;
+          uiBlocker.unblock();
         }
+        uiBlocker.unblock();
         break;
       case UserAction.DELETE_COMMENT:
         try {
-          await this.#commentsModel.deleteComment(updateType, update, film);
+          await this.#commentsModel.deleteComment(updateType, update);
         } catch(err) {
-          this.#shakeForm();
+          this.#commentsComponent.shake(() => {
+            update.deleteButton.disabled = false;
+            update.deleteButton.textContent = 'Delete';
+          });
         }
         break;
     }
-
-    this.#uiBlocker.unblock();
-  };
-
-  #shakeForm = () => {
   };
 
   #handleCommentsModelEvent = (updateType, update) => {

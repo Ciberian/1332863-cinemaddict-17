@@ -10,7 +10,6 @@ export default class TopRatedFilmsPresenter {
   #topRatedContainerComponent = new FilmsContainerView();
   #topRatedFilmsComponent = new TopRatedFilmsView();
 
-  #films = [];
   #filmsModel = null;
   #commentsModel = null;
   #boardContainer = null;
@@ -19,11 +18,14 @@ export default class TopRatedFilmsPresenter {
   constructor(filmsModel, commentsModel, boardContainer) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#films = [...this.#filmsModel.films];
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
     this.#commentsModel.addObserver(this.#handleTopRatedFilmsModelEvent);
+  }
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init = () => {
@@ -31,20 +33,28 @@ export default class TopRatedFilmsPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
+    const filmPresenter = new FilmPresenter(container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#topRatedFilmPresenters.set(film.id, filmPresenter);
   };
 
   #renderTopRatedFilmList = () => {
+    if (this.films.every((film) => film.filmInfo.totalRating === 0.0)) {
+      return;
+    }
+
     render(this.#topRatedFilmsComponent, this.#boardContainer);
     render(this.#topRatedContainerComponent, this.#topRatedFilmsComponent.element);
 
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating)
       .slice(0, TOP_RATED_FILMS_DISPLAYED)
-      .forEach((topRatedFilm) => this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element));
+      .forEach((topRatedFilm) => {
+        if (topRatedFilm.filmInfo.totalRating !== 0.0) {
+          this.#renderFilm(topRatedFilm, this.#topRatedContainerComponent.element);
+        }
+      });
   };
 
   clearTopRatedFilmList = () => {
@@ -55,18 +65,9 @@ export default class TopRatedFilmsPresenter {
     remove(this.#topRatedFilmsComponent);
   };
 
-  #handleViewAction = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
-  };
-
   #handleTopRatedFilmsModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        if ('movie' in updatedFilm && this.#topRatedFilmPresenters.get(updatedFilm.movie.id)) {
-          this.#topRatedFilmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
-          break;
-        }
-
         if (this.#topRatedFilmPresenters.get(updatedFilm.id)) {
           this.#topRatedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
         }

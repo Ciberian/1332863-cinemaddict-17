@@ -88,15 +88,15 @@ const createFilmPopupTemplate = (film) => {
 };
 
 export default class FilmPopupView extends AbstractView {
-  #film = null;
+  film = null;
 
   constructor(film) {
     super();
-    this.#film = film;
+    this.film = film;
   }
 
   get template() {
-    return createFilmPopupTemplate(this.#film);
+    return createFilmPopupTemplate(this.film);
   }
 
   removeAllHandlers = () => {

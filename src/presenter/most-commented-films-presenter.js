@@ -10,7 +10,6 @@ export default class MostCommentedFilmsPresenter {
   #mostCommentedFilmsComponent = new MostCommentedFilmsView();
   #mostCommentedContainerComponent = new FilmsContainerView();
 
-  #films = [];
   #filmsModel = null;
   #commentsModel = null;
   #boardContainer = null;
@@ -19,11 +18,15 @@ export default class MostCommentedFilmsPresenter {
   constructor(filmsModel, commentsModel, boardContainer) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#films = [...this.#filmsModel.films];
     this.#boardContainer = boardContainer;
 
     this.#filmsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
     this.#commentsModel.addObserver(this.#handleMostCommentedFilmsModelEvent);
+  }
+
+
+  get films() {
+    return this.#filmsModel.films;
   }
 
   init = () => {
@@ -31,20 +34,27 @@ export default class MostCommentedFilmsPresenter {
   };
 
   #renderFilm = (film, container) => {
-    const filmPresenter = new FilmPresenter(this.#handleViewAction, container, this.#filmsModel, this.#commentsModel);
+    const filmPresenter = new FilmPresenter(container, this.#filmsModel, this.#commentsModel);
     filmPresenter.init(film);
     this.#mostCommentedFilmPresenters.set(film.id, filmPresenter);
   };
 
   #renderMostCommentedFilms = () => {
+    if (this.films.every((film) => film.comments.length === 0)) {
+      return;
+    }
+
     render(this.#mostCommentedFilmsComponent, this.#boardContainer);
     render(this.#mostCommentedContainerComponent, this.#mostCommentedFilmsComponent.element);
-
-    this.#films
+    this.films
       .slice()
       .sort((filmA, filmB) => filmB.comments.length - filmA.comments.length)
       .slice(0, COMMENTED_FILMS_DISPLAYED)
-      .forEach((mostCommentedFilm) => this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element));
+      .forEach((mostCommentedFilm) => {
+        if (mostCommentedFilm.comments.length !== 0) {
+          this.#renderFilm(mostCommentedFilm, this.#mostCommentedContainerComponent.element);
+        }
+      });
   };
 
   clearMostCommentedFilmList = () => {
@@ -55,18 +65,9 @@ export default class MostCommentedFilmsPresenter {
     remove(this.#mostCommentedFilmsComponent);
   };
 
-  #handleViewAction = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
-  };
-
   #handleMostCommentedFilmsModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        if ('movie' in updatedFilm && this.#mostCommentedFilmPresenters.get(updatedFilm.movie.id)) {
-          this.#mostCommentedFilmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
-          break;
-        }
-
         if (this.#mostCommentedFilmPresenters.get(updatedFilm.id)) {
           this.#mostCommentedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
         }

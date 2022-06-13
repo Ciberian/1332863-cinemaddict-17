@@ -3,17 +3,18 @@ import FilmPopupPresenter from './film-popup-presenter.js';
 import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
 
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export default class FilmPresenter {
   #film = null;
-  #changeData = null;
   #filmsModel = null;
   #commentsModel = null;
   #filmCardComponent = null;
   #currentFilmsContainer = null;
   #filmPopupPresenter = null;
 
-  constructor(changeData, container, filmsModel, commentsModel) {
-    this.#changeData = changeData;
+  constructor(container, filmsModel, commentsModel) {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#currentFilmsContainer = container;
@@ -26,7 +27,7 @@ export default class FilmPresenter {
 
     this.#filmCardComponent = new FilmCardView(this.#film);
     this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel);
-    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#changeData, this.#filmsModel));
+    this.#filmCardComponent.setClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -47,21 +48,37 @@ export default class FilmPresenter {
     remove(this.#filmCardComponent);
   };
 
-  #handleFavoriteClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+  #shakeButton = (button) => {
+    button.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      button.disabled = false;
+      button.classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
   };
 
-  #handleWatchedClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+  #handleFavoriteClick = async (evtTarget) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR, {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
   };
 
-  #handleWatchlistClick = () => {
-    this.#changeData(
-      UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+  #handleWatchedClick = async (evtTarget) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
+  };
+
+  #handleWatchlistClick = async (evtTarget) => {
+    try {
+      await this.#filmsModel.updateFilm(UpdateType.MINOR,
+        {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+    } catch(err) {
+      this.#shakeButton(evtTarget);
+    }
   };
 }
