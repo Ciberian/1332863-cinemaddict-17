@@ -164,11 +164,9 @@ export default class FilmBoardPresenter {
       remove(this.#noFilmsComponent);
     }
 
-    if (resetRenderedFilmCount && !isCommentModelInit) {
-      this.#renderedFilmCount = FILM_COUNT_PER_STEP;
-    } else {
-      this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
-    }
+    this.#renderedFilmCount = (resetRenderedFilmCount && !isCommentModelInit) ?
+      FILM_COUNT_PER_STEP :
+      Math.min(filmCount, this.#renderedFilmCount);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;

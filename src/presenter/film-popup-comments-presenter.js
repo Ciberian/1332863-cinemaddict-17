@@ -59,7 +59,9 @@ export default class FilmPopupCommentsPresenter {
       case UserAction.ADD_COMMENT:
         uiBlocker.block();
         try {
+          update.movie.isCommentModelInit = true;
           await this.#commentsModel.addComment(updateType, update);
+          await this.#filmModel.updateFilm(updateType, update.movie);
         } catch(err) {
           this.#commentsComponent.shake();
           update.textarea.disabled = false;
@@ -69,7 +71,9 @@ export default class FilmPopupCommentsPresenter {
         break;
       case UserAction.DELETE_COMMENT:
         try {
+          update.movie.isCommentModelInit = true;
           await this.#commentsModel.deleteComment(updateType, update);
+          await this.#filmModel.updateFilm(updateType, update.movie);
         } catch(err) {
           this.#commentsComponent.shake(() => {
             update.deleteButton.disabled = false;
@@ -84,6 +88,5 @@ export default class FilmPopupCommentsPresenter {
     const newComments = update.comments;
     remove(this.#commentsComponent);
     this.init(newComments);
-    await this.#filmModel.updateFilm(updateType, update.movie);
   };
 }
