@@ -26,6 +26,8 @@ export default class CommentsModel extends Observable {
       const response = await this.#filmsApiService.addComment(update.newComment, update.movie);
       const newComment = response.comments[response.comments.length - 1];
       this.#comments = [...this.#comments, newComment];
+
+      response.movie.isCommentModelInit = true;
       this._notify(updateType, this.#adaptToClient(response));
 
     } catch(err) {
@@ -48,6 +50,7 @@ export default class CommentsModel extends Observable {
       ];
 
       update.comments = this.#comments;
+      update.movie.isCommentModelInit = true;
       this._notify(updateType, update);
 
     } catch(err) {

@@ -145,7 +145,10 @@ export default class FilmBoardPresenter {
     }
   };
 
-  #clearFilmBoard = ({ resetRenderedFilmCount = false, resetSortType = false } = {}) => {
+  #clearFilmBoard = ({
+    resetRenderedFilmCount = false,
+    resetSortType = false,
+    isCommentModelInit = false } = {}) => {
     const filmCount = this.films.length;
     remove(this.#sortComponent);
     remove(this.#showMoreBtnComponent);
@@ -161,7 +164,7 @@ export default class FilmBoardPresenter {
       remove(this.#noFilmsComponent);
     }
 
-    if (resetRenderedFilmCount) {
+    if (resetRenderedFilmCount && !isCommentModelInit) {
       this.#renderedFilmCount = FILM_COUNT_PER_STEP;
     } else {
       this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
@@ -175,11 +178,6 @@ export default class FilmBoardPresenter {
   #handleModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        if ('movie' in updatedFilm && this.#filmPresenters.get(updatedFilm.movie.id)) {
-          this.#filmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
-          break;
-        }
-
         if (this.#filmPresenters.get(updatedFilm.id)) {
           this.#filmPresenters.get(updatedFilm.id).init(updatedFilm);
         }
@@ -189,7 +187,11 @@ export default class FilmBoardPresenter {
         this.#renderMainFilmList();
         break;
       case UpdateType.MAJOR:
-        this.#clearFilmBoard({ resetRenderedFilmCount: true, resetSortType: true });
+        this.#clearFilmBoard({
+          resetRenderedFilmCount: true,
+          resetSortType: true,
+          isCommentModelInit: updatedFilm?.isCommentModelInit,
+        });
         this.#renderMainFilmList();
         break;
       case UpdateType.INIT:

@@ -39,8 +39,12 @@ export default class FilmsModel extends Observable {
       updatedFilm,
       ...this.#films.slice(index + 1),
     ];
-    this._notify(updateType, updatedFilm);
 
+    if (update.isCommentModelInit) {
+      updatedFilm.isCommentModelInit = true;
+    }
+
+    this._notify(updateType, updatedFilm);
   };
 
   #adaptToClient = (film) => {

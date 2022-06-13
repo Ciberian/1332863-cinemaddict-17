@@ -58,11 +58,6 @@ export default class MostCommentedFilmsPresenter {
   #handleMostCommentedFilmsModelEvent = (updateType, updatedFilm) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        if ('movie' in updatedFilm && this.#mostCommentedFilmPresenters.get(updatedFilm.movie.id)) {
-          this.#mostCommentedFilmPresenters.get(updatedFilm.movie.id).init(updatedFilm.movie);
-          break;
-        }
-
         if (this.#mostCommentedFilmPresenters.get(updatedFilm.id)) {
           this.#mostCommentedFilmPresenters.get(updatedFilm.id).init(updatedFilm);
         }
