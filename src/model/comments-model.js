@@ -27,6 +27,7 @@ export default class CommentsModel extends Observable {
       const newComment = response.comments[response.comments.length - 1];
       this.#comments = [...this.#comments, newComment];
 
+      response.isCommentModelInit = true;
       this._notify(updateType, this.#adaptToClient(response));
 
     } catch(err) {
@@ -51,6 +52,7 @@ export default class CommentsModel extends Observable {
       const commentIds = this.#comments.map((comment) => comment.id);
       update.comments = this.#comments;
       update.movie.comments = commentIds;
+      update.isCommentModelInit = true;
       this._notify(updateType, update);
 
     } catch(err) {
