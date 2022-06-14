@@ -82,7 +82,7 @@ export default class FilmBoardPresenter {
   #renderSort = () => {
     if (this.films.length) {
       this.#sortComponent = new SortView(this.#currentSortType);
-      this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+      this.#sortComponent.setSortControlClickHandler(this.#handleSortTypeChange);
 
       render(this.#sortComponent, this.#filmsSectionComponent.element, RenderPosition.BEFOREBEGIN);
     }
@@ -95,7 +95,7 @@ export default class FilmBoardPresenter {
 
   #renderShowMoreBtn = () => {
     this.#showMoreBtnComponent = new ShowMoreBtnView();
-    this.#showMoreBtnComponent.setClickHandler(this.#handleShowMoreBtnClick);
+    this.#showMoreBtnComponent.setShowMoreBtnClickHandler(this.#handleShowMoreBtnClick);
 
     render(this.#showMoreBtnComponent, this.#filmsListComponent.element);
   };

@@ -78,10 +78,10 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
   };
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiAddHandler);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#emojiImgClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
-    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteClickHandler));
-    this.element.addEventListener('keydown', this.#formSubmitHandler);
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteBtnClickHandler));
+    this.element.addEventListener('keydown', this.#textAreaKeydownHandler);
   };
 
   setFormSubmitHandler = (callback) => {
@@ -92,7 +92,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this._callback.deleteComment = callback;
   };
 
-  #emojiAddHandler = (evt) => {
+  #emojiImgClickHandler = (evt) => {
     if (evt.target.nodeName === 'INPUT') {
       const imgName = evt.target.value;
 
@@ -110,7 +110,7 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     });
   };
 
-  #formSubmitHandler = (evt) => {
+  #textAreaKeydownHandler = (evt) => {
     if (evt.keyCode === 13 && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
       const textarea = this.element.querySelector('textarea');
@@ -123,11 +123,11 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
       };
 
       this._callback.formSubmit(evt,  update);
-      this.element.closest('form').removeEventListener('keydown', this.#formSubmitHandler);
+      this.element.closest('form').removeEventListener('keydown', this.#textAreaKeydownHandler);
     }
   };
 
-  #commentDeleteClickHandler = (evt) => {
+  #commentDeleteBtnClickHandler = (evt) => {
     evt.preventDefault();
     const deleteButton = evt.target;
     deleteButton.disabled = true;

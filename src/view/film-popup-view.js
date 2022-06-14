@@ -103,17 +103,17 @@ export default class FilmPopupView extends AbstractView {
     document.removeEventListener('keydown', this.#documentKeydownHandler);
   };
 
-  setClickHandler = (callback) => {
+  setCloseBtnClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeBtnClickHandler);
   };
 
-  setKeydownHandler = (callback) => {
+  setDocumentKeydownHandler = (callback) => {
     this._callback.keydown = callback;
     document.addEventListener('keydown', this.#documentKeydownHandler);
   };
 
-  #clickHandler = (evt) => {
+  #closeBtnClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
     this.removeAllHandlers();

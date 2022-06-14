@@ -50,7 +50,7 @@ export default class FilterPresenter {
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
-    this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.#filterComponent.setFilterControlClickHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
       render(this.#filterComponent, this.#filterContainer);

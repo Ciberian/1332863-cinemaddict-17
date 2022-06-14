@@ -26,8 +26,8 @@ export default class FilmPopupPresenter {
     this.#filmPopupComponent = new FilmPopupView(film);
     prevPopupComponent = this.#filmPopupComponent;
     render(this.#filmPopupComponent, document.querySelector('.footer'), RenderPosition.AFTEREND);
-    this.#filmPopupComponent.setClickHandler(this.#removeFilmPopup);
-    this.#filmPopupComponent.setKeydownHandler(this.#removeFilmPopup);
+    this.#filmPopupComponent.setCloseBtnClickHandler(this.#removeFilmPopup);
+    this.#filmPopupComponent.setDocumentKeydownHandler(this.#removeFilmPopup);
     document.body.classList.add('hide-overflow');
 
     const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(filmsModel, this.#filmPopupComponent.element);
