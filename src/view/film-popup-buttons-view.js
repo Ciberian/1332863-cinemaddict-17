@@ -3,15 +3,13 @@ import AbstractView from '../framework/view/abstract-view.js';
 const createFilmPopupButtonsTemplate = (filmData) => {
   const { userDetails: { watchlist, alreadyWatched, favorite }} = filmData;
 
-  const filmInWatchlistClassName = watchlist ? 'film-details__control-button--active' : '';
-  const alreadyWatchedClassName = alreadyWatched ? 'film-details__control-button--active' : '';
-  const favoriteFilmClassName = favorite ? 'film-details__control-button--active' : '';
+  const setActiveClass = (userDetail) => userDetail ? 'film-details__control-button--active' : '';
 
   return `
     <section class="film-details__controls">
-      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${filmInWatchlistClassName}" id="watchlist" name="watchlist"}>Add to watchlist</button>
-      <button type="button" class="film-details__control-button film-details__control-button--watched ${alreadyWatchedClassName}" id="watched" name="watched"}>Already watched</button>
-      <button type="button" class="film-details__control-button film-details__control-button--favorite ${favoriteFilmClassName}" id="favorite" name="favorite"}>Add to favorites</button>
+      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${setActiveClass(watchlist)}" id="watchlist" name="watchlist"}>Add to watchlist</button>
+      <button type="button" class="film-details__control-button film-details__control-button--watched ${setActiveClass(alreadyWatched)}" id="watched" name="watched"}>Already watched</button>
+      <button type="button" class="film-details__control-button film-details__control-button--favorite ${setActiveClass(favorite)}" id="favorite" name="favorite"}>Add to favorites</button>
     </section>`;
 };
 

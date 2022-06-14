@@ -19,10 +19,7 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
   const releaseDate = date !== null ? humanizeFilmDate(date, 'YYYY') : '';
-  const filmInWatchlistClassName = watchlist ? 'film-card__controls-item--active' : '';
-  const alreadyWatchedClassName = alreadyWatched ? 'film-card__controls-item--active' : '';
-  const favoriteFilmClassName = favorite ? 'film-card__controls-item--active' : '';
-
+  const setActiveClass = (userDetail) => userDetail ? 'film-card__controls-item--active' : '';
   const getCertainLengthDescription = () => (description.length > MAX_DESCRIPTION_LENGTH) ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}...` : description;
 
   return `<article class="film-card">
@@ -39,9 +36,9 @@ const createFilmCardTemplate = (film) => {
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${filmInWatchlistClassName}" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${alreadyWatchedClassName}" type="button">Mark as watched</button>
-        <button class="film-card__controls-item film-card__controls-item--favorite ${favoriteFilmClassName}" type="button">Mark as favorite</button>
+        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${setActiveClass(watchlist)}" type="button">Add to watchlist</button>
+        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${setActiveClass(alreadyWatched)}" type="button">Mark as watched</button>
+        <button class="film-card__controls-item film-card__controls-item--favorite ${setActiveClass(favorite)}" type="button">Mark as favorite</button>
       </div>
     </article>`;
 };
