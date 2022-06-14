@@ -34,7 +34,7 @@ export default class FilmPresenter {
     const prevFilmComponent = this.#filmCardComponent;
 
     this.#filmCardComponent = new FilmCardView(this.#film);
-    this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel, this.UiBlocker);
+    this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel, uiBlocker);
     this.#filmCardComponent.setFilmCardClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#filmsModel));
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);

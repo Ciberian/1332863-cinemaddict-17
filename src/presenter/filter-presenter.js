@@ -49,7 +49,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterView(filters, this.#filterModel.filmsFilter);
     this.#filterComponent.setFilterControlClickHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
@@ -70,7 +70,7 @@ export default class FilterPresenter {
       clickEvt.target.hash.slice(1) :
       clickEvt.target.parentNode.hash.slice(1);
 
-    if (this.#filterModel.filter === filterType) {
+    if (this.#filterModel.filmsFilter === filterType) {
       return;
     }
 
