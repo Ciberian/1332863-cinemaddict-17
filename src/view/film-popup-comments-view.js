@@ -64,14 +64,13 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     return createFilmPopupCommentsTemplate(this._state);
   }
 
-  static convertCommentsToState = (comments) => ({
-    commentsData: comments,
-    typedComment: null,
-    selectedEmotion: null,
-  });
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+  };
 
-  static convertStateToComments = ({selectedEmotion, typedComment}) => (
-    {'emotion': selectedEmotion, 'comment': typedComment});
+  setDeleteCommentHandler = (callback) => {
+    this._callback.deleteComment = callback;
+  };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
@@ -82,14 +81,6 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
     this.element.querySelectorAll('.film-details__comment-delete').forEach((deleteBtn) => deleteBtn.addEventListener('click', this.#commentDeleteBtnClickHandler));
     this.element.addEventListener('keydown', this.#textAreaKeydownHandler);
-  };
-
-  setFormSubmitHandler = (callback) => {
-    this._callback.formSubmit = callback;
-  };
-
-  setDeleteCommentHandler = (callback) => {
-    this._callback.deleteComment = callback;
   };
 
   #emojiImgClickHandler = (evt) => {
@@ -141,4 +132,13 @@ export default class FilmPopupCommentsView extends AbstractStatefulView {
 
     this._callback.deleteComment(evt, update);
   };
+
+  static convertCommentsToState = (comments) => ({
+    commentsData: comments,
+    typedComment: null,
+    selectedEmotion: null,
+  });
+
+  static convertStateToComments = ({selectedEmotion, typedComment}) => (
+    {'emotion': selectedEmotion, 'comment': typedComment});
 }

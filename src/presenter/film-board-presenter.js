@@ -10,7 +10,7 @@ import SortView from '../view/sort-view.js';
 import LoadingView from '../view/film-loading-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import { filter } from '../utils/filter.js';
+import { filmsFilter } from '../utils/filmsFilter.js';
 import { sortFilmsDateDown } from '../utils/films.js';
 import { SortType, UpdateType, FilterType } from '../const.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
@@ -54,10 +54,10 @@ export default class FilmBoardPresenter {
   }
 
   get films() {
-    this.#filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filmsFilter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filter[this.#filterType](films);
-    this.#watchedFilms = filter[FilterType.HISTORY](films);
+    const filteredFilms = filmsFilter[this.#filterType](films);
+    this.#watchedFilms = filmsFilter[FilterType.HISTORY](films);
 
     switch (this.#currentSortType) {
       case SortType.RATE_DOWN:
