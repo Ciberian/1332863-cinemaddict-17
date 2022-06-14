@@ -1,14 +1,6 @@
 import FilmPopupButtonsView from '../view/film-popup-buttons-view.js';
-import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { UpdateType } from '../const.js';
 import { render, remove, replace } from '../framework/render.js';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
-
-const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
 const SHAKE_CLASS_NAME = 'shake';
 const SHAKE_ANIMATION_TIMEOUT = 600;
@@ -18,11 +10,13 @@ export default class FilmPopupButtonsPresenter {
   #container = null;
   #buttonsComponent = null;
   #prevFilm = null;
+  #uiBlocker = null;
 
 
-  constructor(filmsModel, container) {
+  constructor(filmsModel, container, uiBlocker) {
     this.#filmsModel = filmsModel;
     this.#container = container;
+    this.#uiBlocker = uiBlocker;
 
     this.#filmsModel.addObserver(this.#handlePopupButtonsModelEvent);
   }
@@ -82,38 +76,38 @@ export default class FilmPopupButtonsPresenter {
   };
 
   #handleFavoriteClick = async (evtTarget, film) => {
-    uiBlocker.block();
+    this.#uiBlocker.block();
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, favorite: !film.userDetails.favorite}});
     } catch(err) {
-      uiBlocker.unblock();
+      this.#uiBlocker.unblock();
       this.#shakeButton(evtTarget);
     }
-    uiBlocker.unblock();
+    this.#uiBlocker.unblock();
   };
 
   #handleWatchedClick = async (evtTarget, film) => {
-    uiBlocker.block();
+    this.#uiBlocker.block();
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, alreadyWatched: !film.userDetails.alreadyWatched}});
     } catch(err) {
-      uiBlocker.unblock();
+      this.#uiBlocker.unblock();
       this.#shakeButton(evtTarget);
     }
-    uiBlocker.unblock();
+    this.#uiBlocker.unblock();
   };
 
   #handleWatchlistClick = async (evtTarget, film) => {
-    uiBlocker.block();
+    this.#uiBlocker.block();
     try {
       await this.#filmsModel.updateFilm(UpdateType.MINOR,
         {...film, userDetails: {...film.userDetails, watchlist: !film.userDetails.watchlist}});
     } catch(err) {
-      uiBlocker.unblock();
+      this.#uiBlocker.unblock();
       this.#shakeButton(evtTarget);
     }
-    uiBlocker.unblock();
+    this.#uiBlocker.unblock();
   };
 }

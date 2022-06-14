@@ -1,25 +1,19 @@
 import FilmPopupCommentsView from '../view/film-popup-comments-view.js';
-import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { render, remove } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
-
-const uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
 export default class FilmPopupCommentsPresenter {
   #film = null;
   #container = null;
   #commentsModel = null;
   #commentsComponent = null;
+  #uiBlocker = null;
 
-  constructor(film, container, commentsModel) {
+  constructor(film, container, commentsModel, uiBlocker) {
     this.#film = film;
     this.#container = container;
     this.#commentsModel = commentsModel;
+    this.#uiBlocker = uiBlocker;
 
     this.#commentsModel.addObserver(this.#handleCommentsModelEvent);
   }
@@ -55,15 +49,15 @@ export default class FilmPopupCommentsPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.ADD_COMMENT:
-        uiBlocker.block();
+        this.#uiBlocker.block();
         try {
           await this.#commentsModel.addComment(updateType, update);
         } catch(err) {
           this.#commentsComponent.shake();
           update.textarea.disabled = false;
-          uiBlocker.unblock();
+          this.#uiBlocker.unblock();
         }
-        uiBlocker.unblock();
+        this.#uiBlocker.unblock();
         break;
       case UserAction.DELETE_COMMENT:
         try {

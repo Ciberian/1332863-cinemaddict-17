@@ -10,9 +10,11 @@ export default class FilmPopupPresenter {
   #filmPopupComponent = null;
   #commentsModel = null;
   #comments = null;
+  #uiBlocker = null;
 
-  constructor(commentsModel) {
+  constructor(commentsModel, uiBlocker) {
     this.#commentsModel = commentsModel;
+    this.#uiBlocker = uiBlocker;
   }
 
   async init(film, filmsModel) {
@@ -30,12 +32,12 @@ export default class FilmPopupPresenter {
     this.#filmPopupComponent.setDocumentKeydownHandler(this.#removeFilmPopup);
     document.body.classList.add('hide-overflow');
 
-    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(filmsModel, this.#filmPopupComponent.element);
+    const filmPopupButtonsPresenter = new FilmPopupButtonsPresenter(filmsModel, this.#filmPopupComponent.element, this.#uiBlocker);
     filmPopupButtonsPresenter.init(film);
 
     await this.#commentsModel.init(film);
     this.#comments = this.#commentsModel.comments;
-    this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel);
+    this.#filmPopupCommentsPresenter = new FilmPopupCommentsPresenter(film, this.#filmPopupComponent.element, this.#commentsModel, this.#uiBlocker);
     this.#filmPopupCommentsPresenter.init(this.#comments);
   }
 
