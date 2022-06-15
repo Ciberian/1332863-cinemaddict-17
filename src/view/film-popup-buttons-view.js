@@ -25,36 +25,14 @@ export default class FilmPopupButtonsView extends AbstractView {
     return createFilmPopupButtonsTemplate(this.#film);
   }
 
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
-    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+  setButtonsClickHandler = (callback, callbackName, selectorName) => {
+    this._callback[callbackName] = callback;
+    this.element.querySelector(selectorName).addEventListener('click', (evt) => this.#buttonsClickHandler(evt, callbackName));
   };
 
-  setWatchedClickHandler = (callback) => {
-    this._callback.watchedClick = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
-  };
-
-  setWatchlistClickHandler = (callback) => {
-    this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
-  };
-
-  #favoriteClickHandler = (evt) => {
+  #buttonsClickHandler = (evt, callbackName) => {
     evt.preventDefault();
     evt.target.disabled = true;
-    this._callback.favoriteClick(evt.target, this.#film);
-  };
-
-  #watchedClickHandler = (evt) => {
-    evt.preventDefault();
-    evt.target.disabled = true;
-    this._callback.watchedClick(evt.target, this.#film);
-  };
-
-  #watchlistClickHandler = (evt) => {
-    evt.preventDefault();
-    evt.target.disabled = true;
-    this._callback.watchlistClick(evt.target, this.#film);
+    this._callback[callbackName](evt.target, this.#film);
   };
 }

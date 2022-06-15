@@ -36,9 +36,9 @@ export default class FilmPresenter {
     this.#filmCardComponent = new FilmCardView(this.#film);
     this.#filmPopupPresenter = new FilmPopupPresenter(this.#commentsModel, uiBlocker);
     this.#filmCardComponent.setFilmCardClickHandler(() => this.#filmPopupPresenter.init(this.#film, this.#filmsModel));
-    this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
-    this.#filmCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+    this.#filmCardComponent.setButtonsClickHandler(this.#handleFavoriteClick, 'favoriteClick', '.film-card__controls-item--favorite');
+    this.#filmCardComponent.setButtonsClickHandler(this.#handleWatchedClick, 'watchedClick', '.film-card__controls-item--mark-as-watched');
+    this.#filmCardComponent.setButtonsClickHandler(this.#handleWatchlistClick, 'watchlistClick', '.film-card__controls-item--add-to-watchlist');
 
     if (prevFilmComponent === null) {
       render(this.#filmCardComponent, this.#currentFilmsContainer);
