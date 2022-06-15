@@ -25,9 +25,9 @@ export default class FilmPopupButtonsView extends AbstractView {
     return createFilmPopupButtonsTemplate(this.#film);
   }
 
-  setButtonsClickHandler = (callback, callbackName, selectorName) => {
+  setButtonsClickHandler = (callback, callbackName) => {
     this._callback[callbackName] = callback;
-    this.element.querySelector(selectorName).addEventListener('click', (evt) => this.#buttonsClickHandler(evt, callbackName));
+    this.element.querySelector(`.film-details__control-button--${callbackName}`).addEventListener('click', (evt) => this.#buttonsClickHandler(evt, callbackName));
   };
 
   #buttonsClickHandler = (evt, callbackName) => {

@@ -27,9 +27,9 @@ export default class FilmPopupButtonsPresenter {
 
     this.#buttonsComponent = new FilmPopupButtonsView(film);
 
-    this.#buttonsComponent.setButtonsClickHandler(this.#handleFavoriteClick, 'favoriteClick', '.film-details__control-button--favorite');
-    this.#buttonsComponent.setButtonsClickHandler(this.#handleWatchedClick, 'watchedClick', '.film-details__control-button--watched');
-    this.#buttonsComponent.setButtonsClickHandler(this.#handleWatchlistClick, 'watchlistClick', '.film-details__control-button--watchlist');
+    this.#buttonsComponent.setButtonsClickHandler(this.#handleFavoriteClick, 'favorite');
+    this.#buttonsComponent.setButtonsClickHandler(this.#handleWatchedClick, 'watched');
+    this.#buttonsComponent.setButtonsClickHandler(this.#handleWatchlistClick, 'watchlist');
 
     if (prevButtonsComponent === null) {
       render(this.#buttonsComponent, this.#container.querySelector('.film-details__top-container'));
