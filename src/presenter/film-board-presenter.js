@@ -10,7 +10,7 @@ import SortView from '../view/sort-view.js';
 import LoadingView from '../view/film-loading-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import { filmsFilter } from '../utils/filmsFilter.js';
+import { filmsFilter } from '../utils/films-filter.js';
 import { sortFilmsDateDown } from '../utils/films.js';
 import { SortType, UpdateType, FilterType } from '../const.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
