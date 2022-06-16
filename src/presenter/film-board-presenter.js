@@ -135,9 +135,13 @@ export default class FilmBoardPresenter {
     render(this.#filmsListComponent, this.#filmsSectionComponent.element, RenderPosition.AFTERBEGIN);
     render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
 
-    this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderedFilmCount)), this.#filmsListContainerComponent.element);
+    if (filmCount > FILM_COUNT_PER_STEP) {
+      this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderedFilmCount)), this.#filmsListContainerComponent.element);
+    } else {
+      this.#renderFilms(films.slice(0, filmCount), this.#filmsListContainerComponent.element);
+    }
 
-    if (filmCount > this.#renderedFilmCount) {
+    if (filmCount > this.#renderedFilmCount && filmCount > FILM_COUNT_PER_STEP) {
       this.#renderShowMoreBtn();
     }
   };
